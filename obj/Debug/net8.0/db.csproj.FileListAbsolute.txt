@@ -33,3 +33,4 @@ D:\GitHub\db\obj\Debug\net8.0\ref\db.dll
 D:\GitHub\db\bin\Debug\net8.0\Newtonsoft.Json.dll
 D:\GitHub\db\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
 D:\GitHub\db\bin\Debug\net8.0\MongoDB.Bson.dll
+D:\GitHub\db\obj\Debug\net8.0\db.sourcelink.json

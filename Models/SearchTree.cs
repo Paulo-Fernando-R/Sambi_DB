@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.IO.Compression;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace db.Models
 {
     public class SearchTree
@@ -98,7 +100,7 @@ namespace db.Models
                         // return JsonConvert.DeserializeObject<BTreeNode>(json);
                         reader.Close();
                         nodes.Add(SearchTreeNode.Deserialize(json));
-                       
+
                     }
                 }
                 archive.Dispose();
@@ -110,24 +112,52 @@ namespace db.Models
 
         public void GetKeys()
         {
-            var  nodes = ReadNodes(1);
+            var nodes = ReadNodes(1);
             var list = new List<dynamic>();
 
-           foreach (SearchTreeNode node in nodes)
+            foreach (SearchTreeNode node in nodes)
             {
                 list.Add(node.DynamicKeys());
             }
 
-          
 
-            Console.WriteLine(JsonConvert.SerializeObject( list));
+
+            Console.WriteLine(JsonConvert.SerializeObject(list));
+        }
+
+        public void SearchByProperty()
+        {
+            var nodes = ReadNodes(1);
+            var list = new List<JObject>();
+
+            foreach (SearchTreeNode node in nodes)
+            {
+                list.Add(node.DynamicKeys());
+
+            }
+
+            var result = list.AsQueryable()
+                         .Where(d => d["Age"] != null && (int)d["Age"] > 30);
+
+            /* var result = list.Where(d =>
+             {
+                 var dict = (IDictionary<string, object>)d;
+                 return dict.ContainsKey("Age") && (int)dict["Age"] > 25;
+             });*/
+
+            foreach (var item in result)
+            {
+                Console.WriteLine(item); // Output: Bob
+            }
+
+
         }
 
         public void Insert(string jsonData)
         {
-            if (Root.Keys.Count < Degree)
+            if (Root.Keys == string.Empty)
             {
-                Root.Keys.Add(jsonData);
+                Root.Keys = jsonData;
                 WriteNode(Root);
                 return;
             }
@@ -135,13 +165,15 @@ namespace db.Models
             if (Root.ChildrenIds.Count < Degree)
             {
                 var newNode = new SearchTreeNode(true, false, Degree);
-                newNode.Keys.Add(jsonData);
+                newNode.Keys = jsonData;
                 WriteNode(newNode);
                 Root.isLeaf = false;
                 Root.ChildrenIds.Add(newNode.Id);
                 WriteNode(Root);
                 return;
             }
+
+
 
 
             string id = FindNonFullNode(Root.ChildrenIds);
@@ -151,15 +183,15 @@ namespace db.Models
 
             var node = ReadNode(id);
 
-            if (node.Keys.Count < Degree)
+            if (node.Keys == string.Empty)
             {
-                node.Keys.Add(jsonData);
+                node.Keys = jsonData;
                 WriteNode(node);
             }
             else
             {
                 var newNode = new SearchTreeNode(true, false, Degree);
-                newNode.Keys.Add(jsonData);
+                newNode.Keys = jsonData;
                 WriteNode(newNode);
                 node.isLeaf = false;
                 node.ChildrenIds.Add(newNode.Id);
@@ -190,7 +222,7 @@ namespace db.Models
             {
                 var node = ReadNode(nodes[i]);
 
-                if (node.Keys.Count < Degree)
+                if (node.Keys == string.Empty)
                 {
                     id = node.Id;
                 }

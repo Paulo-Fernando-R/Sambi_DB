@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 namespace db.Models
 {
     public class SearchTreeNode
@@ -6,7 +7,7 @@ namespace db.Models
         public string Id { get; set; }
         public bool IsRoot { get; set; }
         public bool isLeaf { get; set; }
-        public List<String> Keys { get; set; }
+        public string Keys { get; set; }
         public List<String> ChildrenIds { get; set; }
         public int degree { get; set; }
 
@@ -15,7 +16,7 @@ namespace db.Models
             this.isLeaf = isLeaf;
             this.isLeaf = isRoot;
             this.degree = degree;
-            Keys = new List<String>();
+            Keys = String.Empty;
             ChildrenIds = new List<String>();
             Id = Guid.NewGuid().ToString();
 
@@ -23,9 +24,15 @@ namespace db.Models
 
         public dynamic DynamicKeys()
         {
-            string keys = JsonConvert.SerializeObject(Keys);
-            dynamic converted = JsonConvert.DeserializeObject<dynamic>(keys);
+           
+            dynamic converted = JsonConvert.DeserializeObject<JObject>(Keys);
+         
             return converted;
+        }
+
+        public string JsonKeys()
+        {
+            return JsonConvert.SerializeObject(Keys);
         }
 
         public string Serialize() => JsonConvert.SerializeObject(this);
