@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "VM6FhFnbBsz70M+LdJEA2w88xHjW6/R/y8GPwb3TiPg=",
+  "Hash": "o0y6pV+49iasRLcj0l6FoFbB/pXmQEuRHHCm6MjxUbU=",
   "Source": "db",
   "BasePath": "_content/db",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }

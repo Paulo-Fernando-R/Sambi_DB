@@ -47,7 +47,7 @@ namespace db.Controllers
             string json3 = @"{ 'Name': 'Charlie', 'Age': 35 }";
 
             var sTree = new SearchTree();
-             /* sTree.Insert(json);
+            /*  sTree.Insert(json);
               sTree.Insert(json2);
               sTree.Insert(json3);
               sTree.Insert(json);
@@ -59,7 +59,9 @@ namespace db.Controllers
 
             //sTree.GetAll();
             //sTree.GetKeys();
-            sTree.SearchByProperty();
+            // sTree.SearchByProperty();
+
+            sTree.DeleteById("2105263a-efb5-4efc-b839-3fa97fb6e70a");
         }
 
 

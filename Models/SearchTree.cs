@@ -1,7 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.IO.Compression;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO.Compression;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace db.Models
 {
     public class SearchTree
@@ -151,6 +150,51 @@ namespace db.Models
             }
 
 
+        }
+
+        public void DeleteById(string id)
+        {
+           
+            using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
+            {
+                var entry = archive.GetEntry(id);
+
+                if (entry == null)
+                {
+                    archive.Dispose();
+                  //  return;
+                }
+
+              //  entry.Delete();
+                archive.Dispose();
+
+                RemoveChildInParent(id, ReadNode("Root").ChildrenIds);
+
+            }
+        }
+
+        private void RemoveChildInParent(string id, List<string> nodes)
+        {
+
+          
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i] == id)
+                {
+                    nodes.RemoveAt(i);
+                   //PRECISA VERIFICAR O PROPRIO NODE ATUAL SE O ID ESTA NELE ANTES DE VERIFICAR OS CHILDRENS DELE
+                }
+                var node = ReadNode(nodes[i]);
+                
+                if (node.ChildrenIds.Contains(id)){
+                    node.ChildrenIds.Remove(id);
+                    WriteNode(node);
+                    return;
+                }
+                RemoveChildInParent(id, node.ChildrenIds);
+
+            }
         }
 
         public void Insert(string jsonData)
