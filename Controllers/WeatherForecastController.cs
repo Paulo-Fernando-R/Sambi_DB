@@ -47,21 +47,21 @@ namespace db.Controllers
             string json3 = @"{ 'Name': 'Charlie', 'Age': 35 }";
 
             var sTree = new SearchTree();
-            /*  sTree.Insert(json);
-              sTree.Insert(json2);
-              sTree.Insert(json3);
-              sTree.Insert(json);
-              sTree.Insert(json2);
-              sTree.Insert(json3);*/
+            /* sTree.Insert(json);
+             sTree.Insert(json2);
+             sTree.Insert(json3);
+             sTree.Insert(json);
+             sTree.Insert(json2);
+             sTree.Insert(json3);*/
 
             // sTree.SearchById("8691aebe-768e-4d93-8558-ad8f7f475e42");
 
 
             //sTree.GetAll();
             //sTree.GetKeys();
-            // sTree.SearchByProperty();
+            sTree.SearchByProperty("Name", "Alice", "==");
 
-            sTree.DeleteById("2105263a-efb5-4efc-b839-3fa97fb6e70a");
+           //  sTree.DeleteById("10ebad1c-3c5d-4f14-a8a7-c5dde1e53828");
         }
 
 

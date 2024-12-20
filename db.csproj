@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Models\NodeKeys.cs" />
+    <Compile Remove="Storage\NodeKeys.cs" />
   </ItemGroup>
 
   <ItemGroup>

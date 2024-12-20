@@ -1,6 +1,6 @@
-﻿using System.IO.Compression;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO.Compression;
 namespace db.Models
 {
     public class SearchTree
@@ -42,23 +42,6 @@ namespace db.Models
                 archive.Dispose();
 
             }
-
-            /*  using (var fs = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-              using (var zip = new ZipArchive(fs, ZipArchiveMode.Update))
-              {
-                  // Verifica se o nó já foi salvo
-                  // string serializedNode = JsonConvert.SerializeObject(node);
-                  string serializedNode = node.Serialize();
-                  using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
-                  {
-                      var entry = archive.CreateEntry(node.Id);
-                      using (var entryStream = entry.Open())
-                      using (var writer = new StreamWriter(entryStream))
-                      {
-                          writer.Write(serializedNode);
-                      }
-                  }
-              }*/
         }
 
         private SearchTreeNode ReadNode(string nodeId)
@@ -124,7 +107,7 @@ namespace db.Models
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
-        public void SearchByProperty()
+        public void SearchByProperty(string property, string value, string operation)
         {
             var nodes = ReadNodes(1);
             var list = new List<JObject>();
@@ -135,26 +118,49 @@ namespace db.Models
 
             }
 
-            var result = list.AsQueryable()
+          
+            
+            switch (operation)
+            {
+                /*case "!=":
+                      result = list.AsQueryable()
+                        .Where(d => d[property] != null && (object)d[property] != value);
+                    break;*/
+                
+                case "==":
+                    var result = list.AsQueryable()
+                     .Where(d => d[property] != null && object.Equals((object)d[property], value));
+
+                    foreach (var item in result)
+                    {
+                        Console.WriteLine(item); // Output: Bob
+                    }
+                    break;
+                case ">":
+                     result = list.AsQueryable()
+                     .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
+                    break;
+                default:
+                    break;
+            }
+
+            /*var result = list.AsQueryable()
                          .Where(d => d["Age"] != null && (int)d["Age"] > 30);
 
-            /* var result = list.Where(d =>
-             {
-                 var dict = (IDictionary<string, object>)d;
-                 return dict.ContainsKey("Age") && (int)dict["Age"] > 25;
-             });*/
 
-            foreach (var item in result)
+            */
+
+           
+           /* foreach (var item in result as Array)
             {
                 Console.WriteLine(item); // Output: Bob
-            }
+            }*/
 
 
         }
 
         public void DeleteById(string id)
         {
-           
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
             {
                 var entry = archive.GetEntry(id);
@@ -162,38 +168,41 @@ namespace db.Models
                 if (entry == null)
                 {
                     archive.Dispose();
-                  //  return;
+                    return;
                 }
 
-              //  entry.Delete();
+                RemoveChildInParent(id, ReadNode("Root"));
+
+                entry.Delete();
                 archive.Dispose();
-
-                RemoveChildInParent(id, ReadNode("Root").ChildrenIds);
-
             }
         }
 
-        private void RemoveChildInParent(string id, List<string> nodes)
+        private void RemoveChildInParent(string id, SearchTreeNode node)
         {
-
-          
-
-            for (int i = 0; i < nodes.Count; i++)
+            if (node.ChildrenIds.Contains(id))
             {
-                if (nodes[i] == id)
+                node.ChildrenIds.Remove(id);
+                WriteNode(node);
+                return;
+            }
+
+            for (int i = 0; i < node.ChildrenIds.Count; i++)
+            {
+                var newNode = ReadNode(node.ChildrenIds[i]);
+
+                if (newNode == null)
                 {
-                    nodes.RemoveAt(i);
-                   //PRECISA VERIFICAR O PROPRIO NODE ATUAL SE O ID ESTA NELE ANTES DE VERIFICAR OS CHILDRENS DELE
-                }
-                var node = ReadNode(nodes[i]);
-                
-                if (node.ChildrenIds.Contains(id)){
-                    node.ChildrenIds.Remove(id);
-                    WriteNode(node);
                     return;
                 }
-                RemoveChildInParent(id, node.ChildrenIds);
 
+                if (newNode.ChildrenIds.Contains(id))
+                {
+                    newNode.ChildrenIds.Remove(id);
+                    WriteNode(newNode);
+                    return;
+                }
+                RemoveChildInParent(id, newNode);
             }
         }
 
@@ -216,9 +225,6 @@ namespace db.Models
                 WriteNode(Root);
                 return;
             }
-
-
-
 
             string id = FindNonFullNode(Root.ChildrenIds);
 
