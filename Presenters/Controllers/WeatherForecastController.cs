@@ -2,7 +2,7 @@ using db.Index.Enums;
 using db.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace db.Controllers
+namespace db.Presenters.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -47,7 +47,7 @@ namespace db.Controllers
             string json2 = @"{ 'Name': 'Bob', 'Age': 30 }";
             string json3 = @"{ 'Name': 'Charlie', 'Age': 35 }";
 
-            var sTree = new SearchTree();
+           // var sTree = new SearchTree();
             /* sTree.Insert(json);
              sTree.Insert(json2);
              sTree.Insert(json3);
@@ -60,9 +60,9 @@ namespace db.Controllers
 
             //sTree.GetAll();
             //sTree.GetKeys();
-            sTree.SearchByProperty("Name", "Alice", OperatorsEnum.Equal);
+           // sTree.SearchByProperty("Name", "Alice", OperatorsEnum.Equal);
 
-           //  sTree.DeleteById("10ebad1c-3c5d-4f14-a8a7-c5dde1e53828");
+            //  sTree.DeleteById("10ebad1c-3c5d-4f14-a8a7-c5dde1e53828");
         }
 
 

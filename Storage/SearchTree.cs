@@ -1,4 +1,5 @@
 ﻿using db.Index.Enums;
+using db.Index.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
@@ -10,11 +11,10 @@ namespace db.Models
         private readonly int Degree;
         public SearchTreeNode Root { get; private set; }
 
-        public SearchTree()
+        public SearchTree(String fileName)
         {
-            FileName = "SeachTreeStorage.zip";
+            FileName = fileName;
             Degree = 2;
-
             Root = new SearchTreeNode(true, true, Degree) { Id = "Root" };
 
         }
@@ -49,6 +49,7 @@ namespace db.Models
         {
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
             {
+
                 var entry = archive.GetEntry(nodeId);
                 if (entry == null)
                     return null;
@@ -112,7 +113,7 @@ namespace db.Models
         {
             var nodes = ReadNodes(1);
             var list = new List<JObject>();
-          
+
 
             foreach (SearchTreeNode node in nodes)
             {
@@ -120,15 +121,15 @@ namespace db.Models
 
             }
 
-          
-            
+
+
             switch (operation)
             {
                 /*case "!=":
                       result = list.AsQueryable()
                         .Where(d => d[property] != null && (object)d[property] != value);
                     break;*/
-                
+
                 case OperatorsEnum.Equal:
                     var result = list.AsQueryable()
                      .Where(d => d[property] != null && object.Equals((object)d[property], value));
@@ -139,8 +140,8 @@ namespace db.Models
                     }
                     break;
                 case OperatorsEnum.GreaterOrEqualThan:
-                     result = list.AsQueryable()
-                     .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
+                    result = list.AsQueryable()
+                    .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
                     break;
                 default:
                     break;
@@ -152,11 +153,11 @@ namespace db.Models
 
             */
 
-           
-           /* foreach (var item in result as Array)
-            {
-                Console.WriteLine(item); // Output: Bob
-            }*/
+
+            /* foreach (var item in result as Array)
+             {
+                 Console.WriteLine(item); // Output: Bob
+             }*/
 
 
         }
@@ -252,11 +253,26 @@ namespace db.Models
 
         }
 
-        public void SearchById(string id)
+        public SearchTreeNode SearchById(string registerId)
         {
 
-            var node = ReadNode(id);
-            Console.WriteLine(node.Serialize());
+            try
+            {
+                var node = ReadNode(registerId);
+                return node;
+            }
+            catch (System.IO.FileNotFoundException ex)
+            {
+                throw new InternalServerErrorException($"Collection {FileName} not exists.");
+            }
+            /*catch (System.IO.DirectoryNotFoundException)
+            {
+                throw new NotFoundException($"Register {registerId} not found.");
+            }*/
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException(ex.Message);
+            }
         }
 
         public void GetAll()

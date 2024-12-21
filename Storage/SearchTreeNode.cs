@@ -25,7 +25,7 @@ namespace db.Models
         public dynamic DynamicKeys()
         {
            
-            dynamic converted = JsonConvert.DeserializeObject<JObject>(Keys);
+            dynamic converted = JsonConvert.DeserializeObject<dynamic>(Keys);
          
             return converted;
         }
