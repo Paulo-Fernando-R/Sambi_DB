@@ -45,28 +45,21 @@ namespace db.Index.Enums
         }
     }
 
-    public class OperationsEnum
+    public static class OperationsEnum
     {
-        public OperationsEnum() { }
-        private OperationsEnum(string value) { Value = value; }
-        public string Value { get; private set; }
+        // public OperationsEnum() { }
 
-        public static OperationsEnum Equal { get { return new OperationsEnum("=="); } }
-        public static OperationsEnum NotEqual { get { return new OperationsEnum("!="); } }
-        public static OperationsEnum Like { get { return new OperationsEnum("%"); } }
-        public static OperationsEnum GreaterThan { get { return new OperationsEnum(">"); } }
-        public static OperationsEnum GreaterOrEqualThan { get { return new OperationsEnum(">="); } }
-        public static OperationsEnum LessThan { get { return new OperationsEnum("<"); } }
-        public static OperationsEnum LessOrEqualThan { get { return new OperationsEnum("<="); } }
-        public static OperationsEnum AreInArray { get { return new OperationsEnum("[==]"); } }
-        public static OperationsEnum Undefined { get { return new OperationsEnum(string.Empty); } }
 
-        public override string ToString()
-        {
-            //var values = Enum.GetValues(typeof(OperationsEnum)).Cast<string>().OrderBy(x => x);
+        public const string Equal = "==";
+        public const string NotEqual = "!=";
+        public const string Like = "%";
+        public const string GreaterThan = ">";
+        public const string GreaterOrEqualThan = ">=";
+        public const string LessThan = "<";
+        public const string LessOrEqualThan = "<=";
+        public const string AreInArray = "[==]";
+        public const string Undefined = "";
 
-            //values.Contains("==");
-            return Value;
-        }
+
     }
 }

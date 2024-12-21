@@ -28,7 +28,7 @@ namespace db.Presenters.Controllers
         public IActionResult GetByProperties(QueryByPropertiesRequest request)
         {
 
-
+            queryOperations.QueryByPropertiesFactory(request);
             return Ok();
 
 

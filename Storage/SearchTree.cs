@@ -1,8 +1,11 @@
 ﻿using db.Index.Enums;
 using db.Index.Exceptions;
+using db.Index.Expressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
+using System.Linq.Expressions;
+using System.Reflection.Metadata;
 namespace db.Models
 {
     public class SearchTree
@@ -125,14 +128,11 @@ namespace db.Models
 
             switch (operation)
             {
-                /*case "!=":
-                      result = list.AsQueryable()
-                        .Where(d => d[property] != null && (object)d[property] != value);
-                    break;*/
+
 
                 case OperatorsEnum.Equal:
                     var result = list.AsQueryable()
-                     .Where(d => d[property] != null && object.Equals((object)d[property], value));
+                     .Where(d => d[property] != null).Where(x => testc(x, property, value, operation));
 
                     foreach (var item in result)
                     {
@@ -147,19 +147,13 @@ namespace db.Models
                     break;
             }
 
-            /*var result = list.AsQueryable()
-                         .Where(d => d["Age"] != null && (int)d["Age"] > 30);
+        }
 
-
-            */
-
-
-            /* foreach (var item in result as Array)
-             {
-                 Console.WriteLine(item); // Output: Bob
-             }*/
-
-
+        private bool testc(dynamic x, string property, string value, OperatorsEnum operation)
+        {
+            //  .Where(d => d[property] != null && (object)d[property] != value);
+            return (float)x[property] > float.Parse(value);
+            return true;
         }
 
         public void DeleteById(string id)
