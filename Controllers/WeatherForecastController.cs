@@ -1,3 +1,4 @@
+using db.Index.Enums;
 using db.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -59,7 +60,7 @@ namespace db.Controllers
 
             //sTree.GetAll();
             //sTree.GetKeys();
-            sTree.SearchByProperty("Name", "Alice", "==");
+            sTree.SearchByProperty("Name", "Alice", OperatorsEnum.Equal);
 
            //  sTree.DeleteById("10ebad1c-3c5d-4f14-a8a7-c5dde1e53828");
         }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using db.Index.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
 namespace db.Models
@@ -107,10 +108,11 @@ namespace db.Models
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
-        public void SearchByProperty(string property, string value, string operation)
+        public void SearchByProperty(string property, string value, OperatorsEnum operation)
         {
             var nodes = ReadNodes(1);
             var list = new List<JObject>();
+          
 
             foreach (SearchTreeNode node in nodes)
             {
@@ -127,7 +129,7 @@ namespace db.Models
                         .Where(d => d[property] != null && (object)d[property] != value);
                     break;*/
                 
-                case "==":
+                case OperatorsEnum.Equal:
                     var result = list.AsQueryable()
                      .Where(d => d[property] != null && object.Equals((object)d[property], value));
 
@@ -136,7 +138,7 @@ namespace db.Models
                         Console.WriteLine(item); // Output: Bob
                     }
                     break;
-                case ">":
+                case OperatorsEnum.GreaterOrEqualThan:
                      result = list.AsQueryable()
                      .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
                     break;
