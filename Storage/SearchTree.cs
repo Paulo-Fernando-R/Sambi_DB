@@ -1,11 +1,10 @@
 ﻿using db.Index.Enums;
 using db.Index.Exceptions;
 using db.Index.Expressions;
+using db.Presenters.Requests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
 namespace db.Models
 {
     public class SearchTree
@@ -112,7 +111,7 @@ namespace db.Models
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
-        public void SearchByProperty(string property, string value, OperatorsEnum operation)
+        public List<JObject> SearchByProperty(string property, string value, List<QueryByPropertiesConditions> conditions)
         {
             var nodes = ReadNodes(1);
             var list = new List<JObject>();
@@ -124,33 +123,47 @@ namespace db.Models
 
             }
 
+            
 
-
-            switch (operation)
+            for(int i = 0;i < conditions.Count;i++)
             {
+                var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
+                list = list.Where(x => condition(x, conditions[i].Key, conditions[i].Value, conditions[i].Operation)).ToList();
 
-
-                case OperatorsEnum.Equal:
-                    var result = list.AsQueryable()
-                     .Where(d => d[property] != null).Where(x => testc(x, property, value, operation));
-
-                    foreach (var item in result)
-                    {
-                        Console.WriteLine(item); // Output: Bob
-                    }
-                    break;
-                case OperatorsEnum.GreaterOrEqualThan:
-                    result = list.AsQueryable()
-                    .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
-                    break;
-                default:
-                    break;
             }
+
+            return list;
+
+           
+
+
+
+            /* switch (operation)
+             {
+
+
+                 case OperatorsEnum.Equal:
+                     var result = list.AsQueryable()
+                      .Where(d => d[property] != null).Where(x => testc(x, property, value, operation));
+
+                     foreach (var item in result)
+                     {
+                         Console.WriteLine(item); // Output: Bob
+                     }
+                     break;
+                 case OperatorsEnum.GreaterOrEqualThan:
+                     result = list.AsQueryable()
+                     .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
+                     break;
+                 default:
+                     break;
+             }*/
 
         }
 
         private bool testc(dynamic x, string property, string value, OperatorsEnum operation)
         {
+            var a = new List<string>() { "==", "!=" };
             //  .Where(d => d[property] != null && (object)d[property] != value);
             return (float)x[property] > float.Parse(value);
             return true;

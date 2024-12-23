@@ -1,61 +1,190 @@
 ﻿using db.Index.Enums;
-using System.Linq.Expressions;
+using db.Index.Exceptions;
+using Newtonsoft.Json.Linq;
 namespace db.Index.Expressions
 {
     public static class DynamicOperatorMapper
     {
-        // Mapeia strings para funções de Expression
-        public static readonly Dictionary<string, Func<Expression, Expression, Expression>> OperationMap =
-            new Dictionary<string, Func<Expression, Expression, Expression>>
-            {
-            { OperationsEnum.Equal, Expression.Equal },
 
-            { OperationsEnum.NotEqual, Expression.NotEqual },
-
-            { OperationsEnum.GreaterThan, (left, right) =>
-                Expression.GreaterThan(
-                    Expression.Convert(left, typeof(IComparable)),
-                    Expression.Convert(right, typeof(IComparable))) },
-
-            { OperationsEnum.LessThan, (left, right) =>
-                Expression.LessThan(
-                    Expression.Convert(left, typeof(IComparable)),
-                    Expression.Convert(right, typeof(IComparable))) },
-
-            { OperationsEnum.AreInArray, (left, right) =>
-                Expression.Call(
-                    Expression.Convert(left, typeof(string)),
-                    nameof(string.Contains),
-                    Type.EmptyTypes,
-                    Expression.Convert(right, typeof(string))) },
-            {
-              OperationsEnum.GreaterOrEqualThan, (left, right) =>
-                Expression.GreaterThanOrEqual(
-                    Expression.Convert(left, typeof(IComparable)),
-                    Expression.Convert(right, typeof(IComparable)))},
-
-            {
-              OperationsEnum.LessOrEqualThan, (left, right) =>
-                Expression.LessThanOrEqual(
-                    Expression.Convert(left, typeof(IComparable)),
-                    Expression.Convert(right, typeof(IComparable)))},
-
-             { OperationsEnum.Like, (left, right) =>
-                Expression.Call(
-                    typeof(Program).GetMethod(nameof(DynamicOperatorMapper.Like), new[] { typeof(string), typeof(string) })!,
-                    left,
-                    right) }
-            };
-
-        // Método auxiliar para obter a função baseada no nome da operação
-        public static Func<Expression, Expression, Expression> GetOperation(string operation)
+        public static readonly Dictionary<string, Func<JObject, string, string, string, bool>> OperationsDictionary = new Dictionary<string, Func<JObject, string, string, string, bool>>
         {
-            if (OperationMap.TryGetValue(operation, out var func))
+            [OperatorsEnum.Equal.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
             {
-                return func;
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return (float)x[property] == float.Parse(value);
+                }
+
+                DateTime valueDateTime = DateTime.Now;
+
+                if (DateTime.TryParse((string)x[property], out valueDateTime))
+                {
+                    return valueDateTime == DateTime.Parse(value);
+                }
+
+                DateOnly valueDateOnly = new DateOnly();
+
+                if (DateTime.TryParse((string)x[property], out valueDateTime))
+                {
+                    return valueDateOnly == DateOnly.Parse(value);
+                }
+
+                bool valueBool = false;
+
+                if (bool.TryParse((string)x[property], out valueBool))
+                {
+                    return valueBool == bool.Parse(value);
+                }
+
+                string valueString = string.Empty;
+
+                try
+                {
+                    return (string)x[property] == value;
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+
+            },
+            [OperatorsEnum.NotEqual.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return (float)x[property] != float.Parse(value);
+                }
+
+                DateTime valueDateTime = DateTime.Now;
+
+                if (DateTime.TryParse((string)x[property], out valueDateTime))
+                {
+                    return valueDateTime != DateTime.Parse(value);
+                }
+
+                DateOnly valueDateOnly = new DateOnly();
+
+                if (DateTime.TryParse((string)x[property], out valueDateTime))
+                {
+                    return valueDateOnly != DateOnly.Parse(value);
+                }
+
+                bool valueBool = false;
+
+                if (bool.TryParse((string)x[property], out valueBool))
+                {
+                    return valueBool != bool.Parse(value);
+                }
+
+                try
+                {
+                    return (string)x[property] == value;
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            },
+
+            [OperatorsEnum.GreaterThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return valueFloat > float.Parse(value);
+                }
+                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+            },
+
+            [OperatorsEnum.GreaterOrEqualThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return (float)x[property] >= float.Parse(value);
+                }
+                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+            },
+
+            [OperatorsEnum.LessThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return (float)x[property] < float.Parse(value);
+                }
+                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+            },
+
+            [OperatorsEnum.LessOrEqualThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                float valueFloat = 0;
+                if (float.TryParse((string)x[property], out valueFloat))
+                {
+                    return (float)x[property] <= float.Parse(value);
+                }
+                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+            },
+
+            [OperatorsEnum.Like.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
+            {
+                if (x == null) throw new ArgumentNullException($"The property {property} not existis in this collection");
+
+                try
+                {
+                    var like = (string)x[property];
+                    return like.Contains(value);
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
-            throw new NotSupportedException($"Operation '{operation}' is not supported.");
+
+
+
+        };
+
+
+
+
+
+
+
+
+        public static Func<JObject, string, string, string, bool> GetOperation(string operation)
+        {
+            if(DynamicOperatorMapper.OperationsDictionary.TryGetValue(operation, out var result))
+            {
+                return result;
+            }
+            throw new OperationNotAllowedException($"Operator {operation} is not suported");
+
+
+           
         }
+
+       
         public static bool Like(string? source, string? pattern)
         {
             if (source == null || pattern == null)

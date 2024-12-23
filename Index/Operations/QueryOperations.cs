@@ -1,5 +1,6 @@
 ﻿using db.Index.Enums;
 using db.Index.Exceptions;
+using db.Index.Expressions;
 using db.Models;
 using db.Presenters.Requests;
 
@@ -29,8 +30,17 @@ namespace db.Index.Operations
         public void QueryByPropertiesFactory(QueryByPropertiesRequest request)
         {
             var sTree = new SearchTree(request.CollectionName + ".zip");
-            sTree.SearchByProperty("Age", "20", OperatorsEnum.Equal);
-            
+            var condition = DynamicOperatorMapper.GetOperation(request.QueryConditions[0].Operation);
+          
+
+       
+            var res = sTree.SearchByProperty("Age", "20", request.QueryConditions);
+
+            foreach (var item in res)
+            {
+                Console.WriteLine(item);
+            }
+
         }
 
 
