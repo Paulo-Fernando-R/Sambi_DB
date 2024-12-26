@@ -2,8 +2,11 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+const string folderName = "Databases";
+string folderPath = Path.Combine(currentDir, folderName);
 
+// Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -11,6 +14,12 @@ builder.Services.AddSwaggerGen(x =>
 {
     x.SwaggerDoc("v1", new OpenApiInfo { Title = "SambiDb",  Version = "v1" });
 });
+
+
+if (!Directory.Exists(folderPath))
+{
+    Directory.CreateDirectory(folderPath);
+}
 
 var app = builder.Build();
 
