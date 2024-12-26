@@ -24,7 +24,7 @@ namespace db.Presenters.Controllers
 
 
         [HttpPost]
-        [Route("[controller]/QueryById")]
+        [Route("[controller]/QueryById/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -52,7 +52,7 @@ namespace db.Presenters.Controllers
 
 
         [HttpPost]
-        [Route("[controller]/QueryByProperty/AND")]
+        [Route("[controller]/QueryByProperty/AND/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -90,7 +90,7 @@ namespace db.Presenters.Controllers
         }
 
         [HttpPost]
-        [Route("[controller]/QueryByProperty/OR")]
+        [Route("[controller]/QueryByProperty/OR/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
