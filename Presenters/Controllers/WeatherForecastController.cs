@@ -66,8 +66,8 @@ namespace db.Presenters.Controllers
         }
 
 
-        private void WriteFile(string path, BTree bTree)
-        {
+       // private void WriteFile(string path, BTree bTree)
+      //  {
 
             //bTree.SaveToFile(path);
             // var tree = BTree.LoadFromFile(path, 3);
@@ -80,6 +80,6 @@ namespace db.Presenters.Controllers
 
             // sw.Close();
 
-        }
+      //  }
     }
 }
