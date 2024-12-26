@@ -25,5 +25,20 @@ namespace db.Index.Operations
 
             Directory.CreateDirectory(newFolderPath);
         }
+
+        public void DatabaseDelete(string databaseName)
+        {
+            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            string ParentFolderName = _configuration["Databases:FolderName"];
+            string newFolderPath = Path.Combine(currentDir, ParentFolderName, databaseName);
+
+            if (Directory.Exists(newFolderPath))
+            {
+                Directory.Delete(newFolderPath, true);
+                return;
+            }
+
+            throw new DirectoryNotExistsException($"Database '{databaseName}' does not exist");
+        }
     }
 }

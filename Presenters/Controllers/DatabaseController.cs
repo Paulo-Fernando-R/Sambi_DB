@@ -2,7 +2,6 @@
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 
 namespace db.Presenters.Controllers
 {
@@ -27,13 +26,35 @@ namespace db.Presenters.Controllers
             try
             {
                 databaseOperations.DatabaseCreate(request);
-                return Ok();
+                return Ok($"Database '{request.DatabaseName}' was created sucessfully");
             }
             catch (AlreadyExistsException ex)
             {
 
-               return BadRequest(ex.Message);
+                return BadRequest(ex.Message);
             }
+        }
+
+        [HttpDelete]
+        [Route("[controller]/Delete/{DatabaseName}")]
+        public IActionResult Delete(string DatabaseName, DatabaseDeleteRequest request)
+        {
+            if (request == null || request.Confirm != true)
+            {
+                return BadRequest("This operation requires a request confirmation");
+            }
+
+            try
+            {
+                databaseOperations.DatabaseDelete(DatabaseName);
+                return Ok($"Database '{DatabaseName}' was deleted sucessfully");
+            }
+            catch (DirectoryNotExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
         }
     }
 }
