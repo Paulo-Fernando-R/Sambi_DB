@@ -1,9 +1,10 @@
-﻿using db.Index.Exceptions;
+﻿using db.Index.Enums;
+using db.Index.Exceptions;
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System.Text.Json;
+
 
 namespace db.Presenters.Controllers
 {
@@ -21,18 +22,6 @@ namespace db.Presenters.Controllers
             queryOperations = new QueryOperations();
         }
 
-
-
-        [HttpPost]
-        [Route("[controller]/QueryByProperties")]
-        public IActionResult GetByProperties(QueryByPropertiesRequest request)
-        {
-
-            queryOperations.QueryByPropertiesFactory(request);
-            return Ok();
-
-
-        }
 
         [HttpPost]
         [Route("[controller]/QueryById")]
@@ -59,5 +48,85 @@ namespace db.Presenters.Controllers
                 return BadRequest(ex);
             }
         }
+
+
+
+        [HttpPost]
+        [Route("[controller]/QueryByProperty/AND")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetByPropertyAND(QueryByPropertiesRequest request)
+        {
+
+            try
+            {
+                var res = queryOperations.QueryByPropertyOpAND(OperatorsEnum.And.ToDescriptionString(), request);
+
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InternalServerErrorException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (OperationNotAllowedException ex)
+            {
+                return BadRequest(ex);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex);
+            }
+
+
+        }
+
+        [HttpPost]
+        [Route("[controller]/QueryByProperty/OR")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetByPropertyOr(QueryByPropertiesRequest request)
+        {
+
+
+
+            try
+            {
+                var res = queryOperations.QueryByPropertyOpAND(OperatorsEnum.Or.ToDescriptionString(), request);
+
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InternalServerErrorException ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (OperationNotAllowedException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
     }
 }

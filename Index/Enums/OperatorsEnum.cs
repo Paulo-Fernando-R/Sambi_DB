@@ -29,7 +29,13 @@ namespace db.Index.Enums
         Like,
 
         [Description("")]
-        Undefined
+        Undefined,
+
+        [Description("||")]
+        Or,
+
+        [Description("&&")]
+        And
 
     }
 
@@ -45,21 +51,4 @@ namespace db.Index.Enums
         }
     }
 
-    public static class OperationsEnum
-    {
-        // public OperationsEnum() { }
-
-
-        public const string Equal = "==";
-        public const string NotEqual = "!=";
-        public const string Like = "%";
-        public const string GreaterThan = ">";
-        public const string GreaterOrEqualThan = ">=";
-        public const string LessThan = "<";
-        public const string LessOrEqualThan = "<=";
-        public const string AreInArray = "[==]";
-        public const string Undefined = "";
-
-
-    }
 }

@@ -13,7 +13,7 @@ namespace db.Presenters.Requests
         {
             Key = string.Empty; 
             Value = string.Empty;
-            Operation = OperationsEnum.Undefined;
+            Operation = OperatorsEnum.Undefined.ToDescriptionString();
             ArrayProperty = string.Empty;
         }
     }

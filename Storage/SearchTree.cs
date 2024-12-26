@@ -5,6 +5,7 @@ using db.Presenters.Requests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
+using System.Xml.Linq;
 namespace db.Models
 {
     public class SearchTree
@@ -111,11 +112,43 @@ namespace db.Models
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
-        public List<JObject> SearchByProperty(string property, string value, List<QueryByPropertiesConditions> conditions)
+        public List<SearchTreeNode> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
         {
             var nodes = ReadNodes(1);
-            var list = new List<JObject>();
+            var list = new List<SearchTreeNode>();
 
+             /*foreach (var node in nodes)
+             {
+                 var item = new JObject(node.DynamicKeys());
+
+                 if (DynamicOperatorMapper.ExecuteAllConditions(item, "&&", conditions))
+                 {
+                     list.Add(item);
+                 }
+             }*/
+
+            list = nodes.Where(x =>
+            {
+                var item = new JObject(x.DynamicKeys());
+
+                return DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
+            }).ToList();
+
+             return list;
+
+           /* for (int i = 0; i < conditions.Count; i++)
+            {
+                var a = nodes.Where(x =>
+                {
+                    var y = x.DynamicKeys();
+                    var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
+
+                    return condition(y, conditions[i].Key, conditions[i].Value, conditions[i].Operation);
+
+                }).ToList();
+            }
+
+            return list;
 
             foreach (SearchTreeNode node in nodes)
             {
@@ -123,41 +156,17 @@ namespace db.Models
 
             }
 
-            
 
-            for(int i = 0;i < conditions.Count;i++)
+
+            for (int i = 0; i < conditions.Count; i++)
             {
                 var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
                 list = list.Where(x => condition(x, conditions[i].Key, conditions[i].Value, conditions[i].Operation)).ToList();
 
             }
 
-            return list;
+            return list;*/
 
-           
-
-
-
-            /* switch (operation)
-             {
-
-
-                 case OperatorsEnum.Equal:
-                     var result = list.AsQueryable()
-                      .Where(d => d[property] != null).Where(x => testc(x, property, value, operation));
-
-                     foreach (var item in result)
-                     {
-                         Console.WriteLine(item); // Output: Bob
-                     }
-                     break;
-                 case OperatorsEnum.GreaterOrEqualThan:
-                     result = list.AsQueryable()
-                     .Where(d => d[property] != null && (float)d[property] > float.Parse(property));
-                     break;
-                 default:
-                     break;
-             }*/
 
         }
 

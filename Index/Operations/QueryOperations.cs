@@ -1,8 +1,8 @@
-﻿using db.Index.Enums;
-using db.Index.Exceptions;
+﻿using db.Index.Exceptions;
 using db.Index.Expressions;
 using db.Models;
 using db.Presenters.Requests;
+using db.Presenters.Responses;
 
 namespace db.Index.Operations
 {
@@ -27,19 +27,22 @@ namespace db.Index.Operations
             }
         }
 
-        public void QueryByPropertiesFactory(QueryByPropertiesRequest request)
+        public List<QueryByPropertyResponse> QueryByPropertyOpAND(string operatorType, QueryByPropertiesRequest request)
         {
             var sTree = new SearchTree(request.CollectionName + ".zip");
-            var condition = DynamicOperatorMapper.GetOperation(request.QueryConditions[0].Operation);
-          
-
-       
-            var res = sTree.SearchByProperty("Age", "20", request.QueryConditions);
+      
+            var res = sTree.SearchByProperty(operatorType, request.QueryConditions);
+            var list = new List<QueryByPropertyResponse>();
 
             foreach (var item in res)
             {
                 Console.WriteLine(item);
+                var obj = new QueryByPropertyResponse() { Data = item.DynamicKeys(), Id = item.Id };
+                list.Add(obj);
+
             }
+
+            return list;
 
         }
 

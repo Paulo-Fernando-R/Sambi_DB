@@ -1,5 +1,6 @@
 ﻿using db.Index.Enums;
 using db.Index.Exceptions;
+using db.Presenters.Requests;
 using Newtonsoft.Json.Linq;
 namespace db.Index.Expressions
 {
@@ -167,36 +168,64 @@ namespace db.Index.Expressions
 
 
 
-
-
-
-
-
         public static Func<JObject, string, string, string, bool> GetOperation(string operation)
         {
-            if(DynamicOperatorMapper.OperationsDictionary.TryGetValue(operation, out var result))
+            if (DynamicOperatorMapper.OperationsDictionary.TryGetValue(operation, out var result))
             {
                 return result;
             }
-            throw new OperationNotAllowedException($"Operator {operation} is not suported");
-
-
-           
+            throw new OperationNotAllowedException($"Operator '{operation}' is not allowed");
         }
 
-       
-        public static bool Like(string? source, string? pattern)
+        public static bool ExecuteAllConditions(JObject item, string logicOperator, List<QueryByPropertiesConditions> conditions)
         {
-            if (source == null || pattern == null)
-                return false;
 
-            // Substituir os curingas SQL por padrões regex
-            var regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
-                .Replace("%", ".*")   // '%' → qualquer sequência de caracteres
-                .Replace("_", ".")    // '_' → um único caractere
-                + "$";
 
-            return System.Text.RegularExpressions.Regex.IsMatch(source, regexPattern);
+            if (OperatorsEnum.Or.ToDescriptionString() == logicOperator)
+            {
+                return ExecuteAllConditionsOr(item, conditions);
+
+            }
+            else if (OperatorsEnum.And.ToDescriptionString() == logicOperator)
+            {
+                return ExecuteAllConditionsAnd(item, conditions);
+            }
+            else
+            {
+                throw new OperationNotAllowedException($"The operator '{logicOperator}' is not allowed");
+            }
+
+
+        }
+
+        private static bool ExecuteAllConditionsAnd(JObject item, List<QueryByPropertiesConditions> conditions)
+        {
+            bool flag = true;
+            for (int i = 0; i < conditions.Count; i++)
+            {
+                var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
+                bool res = condition(item, conditions[i].Key, conditions[i].Value, conditions[i].Operation);
+                if (!res)
+                {
+                    flag = res;
+                }
+            }
+            return flag;
+        }
+
+        private static bool ExecuteAllConditionsOr(JObject item, List<QueryByPropertiesConditions> conditions)
+        {
+            bool flag = false;
+            for (int i = 0; i < conditions.Count; i++)
+            {
+                var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
+                bool res = condition(item, conditions[i].Key, conditions[i].Value, conditions[i].Operation);
+                if (res)
+                {
+                    flag = res;
+                }
+            }
+            return flag;
         }
 
     }
