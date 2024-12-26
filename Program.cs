@@ -1,9 +1,10 @@
+using db.Index.Operations;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-const string folderName = "Databases";
+string folderName = builder.Configuration.GetSection("Databases").GetValue<string>("FolderName");
 string folderPath = Path.Combine(currentDir, folderName);
 
 // Add services to the container.
@@ -12,8 +13,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>
 {
-    x.SwaggerDoc("v1", new OpenApiInfo { Title = "SambiDb",  Version = "v1" });
+    x.SwaggerDoc("v1", new OpenApiInfo { Title = "SambiDb", Version = "v1" });
 });
+
+builder.Services.AddTransient<DatabaseOperations>();
+builder.Services.AddTransient<QueryOperations>();
 
 
 if (!Directory.Exists(folderPath))

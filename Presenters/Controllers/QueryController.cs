@@ -16,10 +16,10 @@ namespace db.Presenters.Controllers
         private readonly ILogger<QueryController> _logger;
         private readonly QueryOperations queryOperations;
 
-        public QueryController(ILogger<QueryController> logger)
+        public QueryController(ILogger<QueryController> logger, QueryOperations queryOperations)
         {
             _logger = logger;
-            queryOperations = new QueryOperations();
+            this.queryOperations = queryOperations;
         }
 
 

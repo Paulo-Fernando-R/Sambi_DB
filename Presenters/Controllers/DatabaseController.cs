@@ -13,11 +13,11 @@ namespace db.Presenters.Controllers
         private readonly ILogger<DatabaseController> _logger;
         private readonly DatabaseOperations databaseOperations;
 
-        public DatabaseController(ILogger<DatabaseController> logger, IConfiguration configuration)
+        public DatabaseController(ILogger<DatabaseController> logger, IConfiguration configuration, DatabaseOperations databaseOperations)
         {
             _logger = logger;
             _configuration = configuration;
-            databaseOperations = new DatabaseOperations(configuration);
+            this.databaseOperations = databaseOperations;
         }
 
         [HttpPost]
