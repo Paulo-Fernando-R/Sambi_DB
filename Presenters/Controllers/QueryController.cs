@@ -1,5 +1,4 @@
-﻿using db.Index.Enums;
-using db.Index.Exceptions;
+﻿using db.Index.Exceptions;
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +51,7 @@ namespace db.Presenters.Controllers
 
 
         [HttpPost]
-        [Route("[controller]/QueryByProperty/AND/{DatabaseName}")]
+        [Route("[controller]/QueryByProperty/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -61,7 +60,7 @@ namespace db.Presenters.Controllers
 
             try
             {
-                var res = queryOperations.QueryByPropertyOpAND(DatabaseName, OperatorsEnum.And.ToDescriptionString(), request);
+                var res = queryOperations.QueryByProperty(DatabaseName, request.ConditionsBehavior, request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
@@ -89,40 +88,6 @@ namespace db.Presenters.Controllers
 
         }
 
-        [HttpPost]
-        [Route("[controller]/QueryByProperty/OR/{DatabaseName}")]
-        [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetByPropertyOr(string DatabaseName, QueryByPropertiesRequest request)
-        {
-            try
-            {
-                var res = queryOperations.QueryByPropertyOpAND(DatabaseName, OperatorsEnum.Or.ToDescriptionString(), request);
-
-                return Content(JsonConvert.SerializeObject(res), "application/json");
-            }
-            catch (NotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InternalServerErrorException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (BadRequestException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (OperationNotAllowedException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (ArgumentNullException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
 
 
     }

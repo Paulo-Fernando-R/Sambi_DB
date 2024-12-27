@@ -17,6 +17,7 @@ namespace db.Index.Operations
             currentDir = AppDomain.CurrentDomain.BaseDirectory;
             parentFolderName = _configuration["Databases:FolderName"];
         }
+
         public SearchTreeNode QueryById(string databaseName, QueryByIdRequest request)
         {
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -38,7 +39,7 @@ namespace db.Index.Operations
             }
         }
 
-        public List<QueryByPropertyResponse> QueryByPropertyOpAND(string databaseName, string operatorType, QueryByPropertiesRequest request)
+        public List<QueryByPropertyResponse> QueryByProperty(string databaseName, string operatorType, QueryByPropertiesRequest request)
         {
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
