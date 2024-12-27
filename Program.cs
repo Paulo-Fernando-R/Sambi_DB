@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen(x =>
 
 builder.Services.AddTransient<DatabaseOperations>();
 builder.Services.AddTransient<QueryOperations>();
-
+builder.Services.AddTransient<CollectionOperations>();
 
 if (!Directory.Exists(folderPath))
 {

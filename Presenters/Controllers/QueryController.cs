@@ -23,7 +23,7 @@ namespace db.Presenters.Controllers
 
 
         [HttpPost]
-        [Route("[controller]/QueryById/{DatabaseName}")]
+        [Route("[controller]/ById/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,7 +51,7 @@ namespace db.Presenters.Controllers
 
 
         [HttpPost]
-        [Route("[controller]/QueryByProperty/{DatabaseName}")]
+        [Route("[controller]/ByProperty/{DatabaseName}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
