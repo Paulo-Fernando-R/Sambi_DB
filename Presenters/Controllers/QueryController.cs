@@ -60,7 +60,7 @@ namespace db.Presenters.Controllers
 
             try
             {
-                var res = queryOperations.QueryByProperty(DatabaseName, request.ConditionsBehavior, request);
+                var res = queryOperations.QueryByProperty(DatabaseName, request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }

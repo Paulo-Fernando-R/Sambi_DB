@@ -39,12 +39,12 @@ namespace db.Index.Operations
             }
         }
 
-        public List<QueryByPropertyResponse> QueryByProperty(string databaseName, string operatorType, QueryByPropertiesRequest request)
+        public List<QueryByPropertyResponse> QueryByProperty(string databaseName, QueryByPropertiesRequest request)
         {
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
 
-            var res = sTree.SearchByProperty(operatorType, request.QueryConditions);
+            var res = sTree.SearchByProperty(request.ConditionsBehavior, request.QueryConditions);
             var list = new List<QueryByPropertyResponse>();
 
             foreach (var item in res)
