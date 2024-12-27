@@ -1,6 +1,7 @@
 ﻿using db.Index.Exceptions;
 using db.Index.Operations;
 using db.Presenters.Requests;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 
 namespace db.Presenters.Controllers
@@ -55,6 +56,14 @@ namespace db.Presenters.Controllers
             }
 
 
+        }
+
+        [HttpGet]
+        [Route("[controller]/teste")]
+        public IActionResult testc()
+        {
+            var tal = new HtmlString("<html>\r\n<title>HTML Tutorial</title>\r\n<body>\r\n\r\n<h1>This is a heading</h1>\r\n<p>This is a paragraph.</p>\r\n\r\n</body>\r\n</html>");
+            return Content(tal.Value, "text/html");
         }
     }
 }
