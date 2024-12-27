@@ -16,7 +16,7 @@ namespace db.Models
 
         public SearchTree(String fileName)
         {
-            FileName = fileName;
+            FileName = $"{fileName}.zip";
             Degree = 2;
             Root = new SearchTreeNode(true, true, Degree) { Id = "Root" };
 

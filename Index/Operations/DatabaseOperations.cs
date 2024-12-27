@@ -6,17 +6,19 @@ namespace db.Index.Operations
     public class DatabaseOperations
     {
         private readonly IConfiguration _configuration;
+        private readonly string currentDir;
+        private readonly string parentFolderName;
 
         public DatabaseOperations(IConfiguration configuration)
         {
             _configuration = configuration;
+            currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            parentFolderName = _configuration["Databases:FolderName"];
         }
 
         public void DatabaseCreate(DatabaseCreateRequest request)
         {
-            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            string ParentFolderName = _configuration["Databases:FolderName"];
-            string newFolderPath = Path.Combine(currentDir, ParentFolderName, request.DatabaseName);
+            string newFolderPath = Path.Combine(currentDir, parentFolderName, request.DatabaseName);
 
             if (Directory.Exists(newFolderPath))
             {
@@ -28,9 +30,7 @@ namespace db.Index.Operations
 
         public void DatabaseDelete(string databaseName)
         {
-            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            string ParentFolderName = _configuration["Databases:FolderName"];
-            string newFolderPath = Path.Combine(currentDir, ParentFolderName, databaseName);
+            string newFolderPath = Path.Combine(currentDir, parentFolderName, databaseName);
 
             if (Directory.Exists(newFolderPath))
             {

@@ -28,11 +28,11 @@ namespace db.Presenters.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetById(QueryByIdRequest request)
+        public IActionResult GetById(string DatabaseName, QueryByIdRequest request)
         {
             try
             {
-                var res = queryOperations.QueryById(request);
+                var res = queryOperations.QueryById(DatabaseName, request);
                 return Content(res.Keys, "application/json");
             }
             catch (NotFoundException ex)
@@ -56,12 +56,12 @@ namespace db.Presenters.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetByPropertyAND(QueryByPropertiesRequest request)
+        public IActionResult GetByPropertyAND(string DatabaseName, QueryByPropertiesRequest request)
         {
 
             try
             {
-                var res = queryOperations.QueryByPropertyOpAND(OperatorsEnum.And.ToDescriptionString(), request);
+                var res = queryOperations.QueryByPropertyOpAND(DatabaseName, OperatorsEnum.And.ToDescriptionString(), request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
@@ -94,14 +94,11 @@ namespace db.Presenters.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetByPropertyOr(QueryByPropertiesRequest request)
+        public IActionResult GetByPropertyOr(string DatabaseName, QueryByPropertiesRequest request)
         {
-
-
-
             try
             {
-                var res = queryOperations.QueryByPropertyOpAND(OperatorsEnum.Or.ToDescriptionString(), request);
+                var res = queryOperations.QueryByPropertyOpAND(DatabaseName, OperatorsEnum.Or.ToDescriptionString(), request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
