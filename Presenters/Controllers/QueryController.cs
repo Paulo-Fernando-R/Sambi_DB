@@ -10,8 +10,6 @@ namespace db.Presenters.Controllers
     [ApiController]
     public class QueryController : ControllerBase
     {
-
-
         private readonly ILogger<QueryController> _logger;
         private readonly QueryOperations queryOperations;
 
@@ -20,7 +18,6 @@ namespace db.Presenters.Controllers
             _logger = logger;
             this.queryOperations = queryOperations;
         }
-
 
         [HttpPost]
         [Route("[controller]/ById/{DatabaseName}")]
@@ -46,9 +43,15 @@ namespace db.Presenters.Controllers
             {
                 return BadRequest(ex);
             }
+            catch (DirectoryNotExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-
-
 
         [HttpPost]
         [Route("[controller]/ByProperty/{DatabaseName}")]
@@ -74,21 +77,26 @@ namespace db.Presenters.Controllers
             }
             catch (BadRequestException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (OperationNotAllowedException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
             }
             catch (ArgumentNullException ex)
             {
-                return BadRequest(ex);
+                return BadRequest(ex.Message);
+            }
+            catch(DirectoryNotExistsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
 
-
         }
-
-
 
     }
 }

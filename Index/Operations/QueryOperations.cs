@@ -20,6 +20,12 @@ namespace db.Index.Operations
 
         public SearchTreeNode QueryById(string databaseName, QueryByIdRequest request)
         {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+            if(!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
 
             var sTree = new SearchTree(collection);
@@ -41,6 +47,12 @@ namespace db.Index.Operations
 
         public List<QueryByPropertyResponse> QueryByProperty(string databaseName, QueryByPropertiesRequest request)
         {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
 
@@ -58,7 +70,6 @@ namespace db.Index.Operations
             return list;
 
         }
-
 
     }
 }
