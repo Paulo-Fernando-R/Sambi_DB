@@ -55,8 +55,10 @@ namespace db.Models
                 {
                     writer.Write(serializedNode);
                     writer.Dispose();
+                    writer.Close();
                 }
                 archive.Dispose();
+                
 
             }
         }
@@ -76,6 +78,8 @@ namespace db.Models
                     string json = reader.ReadToEnd();
                     // return JsonConvert.DeserializeObject<BTreeNode>(json);
                     reader.Close();
+                    reader.Dispose();
+                    archive.Dispose();
                     return SearchTreeNode.Deserialize(json);
                 }
             }
@@ -195,15 +199,17 @@ namespace db.Models
         {
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
             {
+                
                 var entry = archive.GetEntry(id);
 
                 if (entry == null)
                 {
                     archive.Dispose();
-                    return;
+                    throw new NotFoundException($"Register '{id}' not exists");
                 }
 
-                RemoveChildInParent(id, ReadNode("Root"));
+                //RemoveChildInParent(id, ReadNode("Root"));
+                RemoveChildInParent(id, Root);
 
                 entry.Delete();
                 archive.Dispose();

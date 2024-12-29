@@ -2,7 +2,6 @@
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace db.Presenters.Controllers
 {
@@ -19,6 +18,8 @@ namespace db.Presenters.Controllers
 
         [HttpPost]
         [Route("[controller]/Create/{DatabaseName}")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Create(string DatabaseName, RegisterCreateRequest request)
         {
 
@@ -37,11 +38,13 @@ namespace db.Presenters.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-            
+
         }
 
         [HttpPut]
         [Route("[controller]/Update/{DatabaseName}")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Update()
         {
             return Ok();
@@ -49,9 +52,28 @@ namespace db.Presenters.Controllers
 
         [HttpDelete]
         [Route("[controller]/Delete/{DatabaseName}")]
-        public IActionResult Delete()
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Delete(string DatabaseName, RegisterDeleteRequest request)
         {
-            return Ok();
+            try
+            {
+                registerOperations.Delete(DatabaseName, request);
+                return Ok($"Register '{request.RegisterId}' deleted sucessfully into '{request.CollectionName}' collection");
+            }
+            catch (DirectoryNotExistsException ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

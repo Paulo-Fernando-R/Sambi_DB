@@ -1,7 +1,6 @@
 ﻿using db.Index.Exceptions;
 using db.Models;
 using db.Presenters.Requests;
-using Newtonsoft.Json;
 
 namespace db.Index.Operations
 {
@@ -11,7 +10,7 @@ namespace db.Index.Operations
         private readonly string currentDir;
         private readonly string parentFolderName;
 
-        public RegisterOperations (IConfiguration configuration)
+        public RegisterOperations(IConfiguration configuration)
         {
             _configuration = configuration;
             currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -22,7 +21,7 @@ namespace db.Index.Operations
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
 
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
             {
                 throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
@@ -30,8 +29,23 @@ namespace db.Index.Operations
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
 
             var sTree = new SearchTree(collection);
-          
+
             sTree.Insert(request.Data.ToString());
+        }
+
+        public void Delete(string databaseName, RegisterDeleteRequest request)
+        {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
+            string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+            var sTree = new SearchTree(collection);
+            sTree.DeleteById(request.RegisterId);
+
         }
     }
 }
