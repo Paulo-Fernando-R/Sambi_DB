@@ -50,6 +50,40 @@ namespace db.Storage
             }
         }
 
+        public async Task DeleteNodeAsync(string id)
+        {
+            await Semaphore.WaitAsync();
+            await ReadSemaphore.WaitAsync();
+            try
+            {
+                using (var archive = ZipFile.Open(Filename, ZipArchiveMode.Update))
+                {
+
+                    var entry = archive.GetEntry(id);
+
+                    if (entry == null)
+                    {
+                        archive.Dispose();
+                        throw new NotFoundException($"Register '{id}' not exists");
+                    }
+
+                    entry.Delete();
+                    archive.Dispose();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            finally
+            {
+                Semaphore.Release();
+                ReadSemaphore.Release();
+            }
+            
+        }
+
         public async Task<SearchTreeNode?> ReadNodeAsync(string nodeId)
         {
             await ReadSemaphore.WaitAsync();
@@ -83,10 +117,9 @@ namespace db.Storage
             {
                 ReadSemaphore.Release();
             }
-
-
-
         }
+
+
 
         public SearchTreeNode ReadNode(string nodeId)
         {
@@ -107,6 +140,7 @@ namespace db.Storage
                 }
             }
         }
+
 
         public async Task<List<SearchTreeNode>?> ReadNodes(int limit = 100)
         {
@@ -151,36 +185,6 @@ namespace db.Storage
                 Semaphore.Release();
                 ReadSemaphore.Release();
             }
-
-
-            /*
-             
-              using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
-            {
-                var entries = archive.Entries;
-                if (entries == null)
-                    return null;
-
-                var nodes = new List<SearchTreeNode>();
-
-                for (int i = 0; i < entries.Count; i++)
-                {
-                    using (var entryStream = entries[i].Open())
-                    using (var reader = new StreamReader(entryStream))
-                    {
-                        string json = reader.ReadToEnd();
-                        // return JsonConvert.DeserializeObject<BTreeNode>(json);
-                        reader.Close();
-                        nodes.Add(SearchTreeNode.Deserialize(json));
-
-                    }
-                }
-                archive.Dispose();
-
-                return nodes;
-
-            }
-             */
         }
     }
 }

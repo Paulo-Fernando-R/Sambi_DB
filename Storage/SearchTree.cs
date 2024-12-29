@@ -18,7 +18,7 @@ namespace db.Models
         public SearchTree(String fileName)
         {
             FileName = $"{fileName}.zip";
-            zipFileManager = new ZipFileManager(fileName);
+            zipFileManager = new ZipFileManager(FileName);
             Degree = 2;
 
             var read = zipFileManager.ReadNode("Root");
@@ -91,23 +91,8 @@ namespace db.Models
 
         public async Task DeleteById(string id)
         {
-            using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
-            {
-
-                var entry = archive.GetEntry(id);
-
-                if (entry == null)
-                {
-                    archive.Dispose();
-                    throw new NotFoundException($"Register '{id}' not exists");
-                }
-
-                //RemoveChildInParent(id, ReadNode("Root"));
-                await RemoveChildInParent(id, Root);
-
-                entry.Delete();
-                archive.Dispose();
-            }
+            await zipFileManager.DeleteNodeAsync(id);
+            await RemoveChildInParent(id, Root);
         }
 
         private async Task RemoveChildInParent(string id, SearchTreeNode node)
@@ -138,6 +123,24 @@ namespace db.Models
             }
         }
 
+        public async Task<SearchTreeNode?> SearchById(string registerId)
+        {
+
+            try
+            {
+                var node = await ReadNode(registerId);
+                return node;
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                throw new InternalServerErrorException($"Collection {FileName} not exists.");
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException(ex.Message);
+            }
+        }
+
         public async Task Insert(string jsonData)
         {
             if (Root.Keys == string.Empty)
@@ -158,9 +161,9 @@ namespace db.Models
                 return;
             }
 
-            string id = await FindNonFullNode(Root.ChildrenIds);
+            string? id = await FindNonFullNode(Root.ChildrenIds);
 
-            if (id == null || id == string.Empty) return;
+            if (id == null) return;
             //TODO
 
             var node = await ReadNode(id);
@@ -182,31 +185,21 @@ namespace db.Models
 
         }
 
-        public async Task<SearchTreeNode?> SearchById(string registerId)
-        {
+       
 
-            try
-            {
-                var node = await ReadNode(registerId);
-                return node;
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                throw new InternalServerErrorException($"Collection {FileName} not exists.");
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerErrorException(ex.Message);
-            }
-        }
-
-        private async Task<string> FindNonFullNode(List<string> nodes)
+        private async Task<string?> FindNonFullNode(List<string> nodes)
         {
-            string id = string.Empty;
+            string? id = null;
 
             for (int i = 0; i < nodes.Count; i++)
             {
                 var node = await ReadNode(nodes[i]);
+
+                if(node == null)
+                {
+                    await RemoveChildInParent(nodes[i], Root);
+                    continue;
+                }
 
                 if (node.Keys == string.Empty)
                 {
@@ -223,10 +216,12 @@ namespace db.Models
                     id = node.Id;
                 }
 
-                if (id == string.Empty)
+                if (id == null)
                 {
-                    await FindNonFullNode(node.ChildrenIds);
+                   id = await FindNonFullNode(node.ChildrenIds);
                 }
+
+                break;
             }
             return id;
         }
