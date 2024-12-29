@@ -12,16 +12,17 @@ namespace db.Models
     {
         private readonly string FileName; //= "SeachTreeStorage.zip";
         private readonly int Degree;
+        private readonly ZipFileManager zipFileManager;
         public SearchTreeNode Root { get; private set; }
 
         public SearchTree(String fileName)
         {
             FileName = $"{fileName}.zip";
+            zipFileManager = new ZipFileManager(fileName);
             Degree = 2;
-            var zip = new ZipFileManager(FileName);
-            var read = zip.ReadNode("Root");
 
-            //var read = await ReadNode("Root");
+            var read = zipFileManager.ReadNode("Root");
+
             if (read != null)
             {
                 Root = read;
@@ -39,100 +40,19 @@ namespace db.Models
             await zip.WriteNodeAsync(node);
             return;
 
-            string serializedNode = node.Serialize();
-
-            /* if(!File.Exists(FileName))
-             {
-                 using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Create)) { }
-             }*/
-
-            using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
-            {
-                var already = archive.GetEntry(node.Id);
-
-                if (already != null)
-                {
-                    already.Delete();
-                }
-
-                var entry = archive.CreateEntry(node.Id);
-
-                using (var entryStream = entry.Open())
-                using (var writer = new StreamWriter(entryStream))
-                {
-                    writer.Write(serializedNode);
-                    writer.Dispose();
-                    writer.Close();
-                }
-                archive.Dispose();
-
-
-            }
         }
 
-        private async Task<SearchTreeNode> ReadNode(string nodeId)
+        private async Task<SearchTreeNode?> ReadNode(string nodeId)
         {
-            var zip = new ZipFileManager(FileName);
-
-            var a = await zip.ReadNodeAsync(nodeId);
-
-            return a;
-
-            using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
-            {
-
-                var entry = archive.GetEntry(nodeId);
-                if (entry == null)
-                    return null;
-
-                using (var entryStream = entry.Open())
-                using (var reader = new StreamReader(entryStream))
-                {
-                    string json = reader.ReadToEnd();
-                    // return JsonConvert.DeserializeObject<BTreeNode>(json);
-                    reader.Close();
-                    reader.Dispose();
-                    archive.Dispose();
-                    return SearchTreeNode.Deserialize(json);
-                }
-            }
+            var res = await zipFileManager.ReadNodeAsync(nodeId);
+            return res;
         }
 
         private async Task<List<SearchTreeNode>?> ReadNodes(int limit)
         {
-
-            var zip = new ZipFileManager(FileName);
-
-
-            var a = await zip.ReadNodes(limit);
-
+            var a = await zipFileManager.ReadNodes(limit);
             return a;
 
-            using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
-            {
-                var entries = archive.Entries;
-                if (entries == null)
-                    return null;
-
-                var nodes = new List<SearchTreeNode>();
-
-                for (int i = 0; i < entries.Count; i++)
-                {
-                    using (var entryStream = entries[i].Open())
-                    using (var reader = new StreamReader(entryStream))
-                    {
-                        string json = reader.ReadToEnd();
-                        // return JsonConvert.DeserializeObject<BTreeNode>(json);
-                        reader.Close();
-                        nodes.Add(SearchTreeNode.Deserialize(json));
-
-                    }
-                }
-                archive.Dispose();
-
-                return nodes;
-
-            }
         }
 
         public async void GetKeys()
@@ -145,8 +65,6 @@ namespace db.Models
                 list.Add(node.DynamicKeys());
             }
 
-
-
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
@@ -155,65 +73,20 @@ namespace db.Models
             var nodes = await ReadNodes(1);
             var list = new List<SearchTreeNode>();
 
-            /*foreach (var node in nodes)
+            if(nodes == null)
             {
-                var item = new JObject(node.DynamicKeys());
-
-                if (DynamicOperatorMapper.ExecuteAllConditions(item, "&&", conditions))
-                {
-                    list.Add(item);
-                }
-            }*/
+                return list;
+            }
 
             list = nodes.Where(x =>
             {
                 var item = new JObject(x.DynamicKeys());
-
                 return DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
+           
             }).ToList();
 
             return list;
 
-            /* for (int i = 0; i < conditions.Count; i++)
-             {
-                 var a = nodes.Where(x =>
-                 {
-                     var y = x.DynamicKeys();
-                     var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
-
-                     return condition(y, conditions[i].Key, conditions[i].Value, conditions[i].Operation);
-
-                 }).ToList();
-             }
-
-             return list;
-
-             foreach (SearchTreeNode node in nodes)
-             {
-                 list.Add(node.DynamicKeys());
-
-             }
-
-
-
-             for (int i = 0; i < conditions.Count; i++)
-             {
-                 var condition = DynamicOperatorMapper.GetOperation(conditions[i].Operation);
-                 list = list.Where(x => condition(x, conditions[i].Key, conditions[i].Value, conditions[i].Operation)).ToList();
-
-             }
-
-             return list;*/
-
-
-        }
-
-        private bool testc(dynamic x, string property, string value, OperatorsEnum operation)
-        {
-            var a = new List<string>() { "==", "!=" };
-            //  .Where(d => d[property] != null && (object)d[property] != value);
-            return (float)x[property] > float.Parse(value);
-            return true;
         }
 
         public async Task DeleteById(string id)
@@ -309,7 +182,7 @@ namespace db.Models
 
         }
 
-        public async Task<SearchTreeNode> SearchById(string registerId)
+        public async Task<SearchTreeNode?> SearchById(string registerId)
         {
 
             try
@@ -317,25 +190,14 @@ namespace db.Models
                 var node = await ReadNode(registerId);
                 return node;
             }
-            catch (System.IO.FileNotFoundException ex)
+            catch (System.IO.FileNotFoundException)
             {
                 throw new InternalServerErrorException($"Collection {FileName} not exists.");
             }
-            /*catch (System.IO.DirectoryNotFoundException)
-            {
-                throw new NotFoundException($"Register {registerId} not found.");
-            }*/
             catch (Exception ex)
             {
                 throw new InternalServerErrorException(ex.Message);
             }
-        }
-
-        public async void GetAll()
-        {
-            var nodes = ReadNodes(5);
-
-            Console.WriteLine(JsonConvert.SerializeObject(nodes));
         }
 
         private async Task<string> FindNonFullNode(List<string> nodes)

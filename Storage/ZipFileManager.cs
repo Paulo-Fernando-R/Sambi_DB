@@ -1,4 +1,5 @@
-﻿using db.Models;
+﻿using db.Index.Exceptions;
+using db.Models;
 using System.IO.Compression;
 
 namespace db.Storage
@@ -38,9 +39,10 @@ namespace db.Storage
                 }
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.ToString());
+
+                throw new FileAccessException("Problems adding the register, it may be that demand is too high.");
             }
             finally
             {
@@ -72,9 +74,9 @@ namespace db.Storage
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.ToString());
+                throw new FileAccessException("Problems read the register, it may be that demand is too high.");
                 throw;
             }
             finally
@@ -141,7 +143,7 @@ namespace db.Storage
             }
             catch (Exception)
             {
-                throw;
+                throw new FileAccessException("Problems read the register, it may be that demand is too high.");
             }
 
             finally
