@@ -154,12 +154,12 @@ namespace db.Models
 
         public async Task Insert(string jsonData)
         {
-            if (Root.Keys == string.Empty)
+            /*if (Root.Keys == string.Empty)
             {
                 Root.Keys = jsonData;
                 await WriteNode(Root);
                 return;
-            }
+            }*/
 
             if (Root.ChildrenIds.Count < Degree)
             {

@@ -58,12 +58,12 @@ namespace db.Presenters.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetByPropertyAND(string DatabaseName, QueryByPropertiesRequest request)
+        public async Task<IActionResult> GetByPropertyAND(string DatabaseName, QueryByPropertiesRequest request)
         {
-
+           
             try
             {
-                var res = queryOperations.QueryByProperty(DatabaseName, request);
+                var res = await queryOperations.QueryByProperty(DatabaseName, request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");
             }
@@ -93,7 +93,7 @@ namespace db.Presenters.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, ex);
             }
 
         }

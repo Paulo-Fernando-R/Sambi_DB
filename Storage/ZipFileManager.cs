@@ -160,11 +160,14 @@ namespace db.Storage
 
                     for (int i = 0; i < entries.Count; i++)
                     {
+                        if (entries[i].Name == "Root")
+                        {
+                            continue;
+                        }
                         using (var entryStream = entries[i].Open())
                         using (var reader = new StreamReader(entryStream))
                         {
                             string json = reader.ReadToEnd();
-                            // return JsonConvert.DeserializeObject<BTreeNode>(json);
                             reader.Close();
                             nodes.Add(SearchTreeNode.Deserialize(json));
 
