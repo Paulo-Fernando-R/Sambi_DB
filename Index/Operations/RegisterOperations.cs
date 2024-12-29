@@ -17,7 +17,7 @@ namespace db.Index.Operations
             parentFolderName = _configuration["Databases:FolderName"];
         }
 
-        public void Create(string databaseName, RegisterCreateRequest request)
+        public async Task Create(string databaseName, RegisterCreateRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
 
@@ -30,10 +30,10 @@ namespace db.Index.Operations
 
             var sTree = new SearchTree(collection);
 
-            sTree.Insert(request.Data.ToString());
+            await sTree.Insert(request.Data.ToString());
         }
 
-        public void Delete(string databaseName, RegisterDeleteRequest request)
+        public async Task Delete(string databaseName, RegisterDeleteRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
 
@@ -44,7 +44,7 @@ namespace db.Index.Operations
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
-            sTree.DeleteById(request.RegisterId);
+            await sTree.DeleteById(request.RegisterId);
 
         }
     }

@@ -18,10 +18,10 @@ namespace db.Index.Operations
             parentFolderName = _configuration["Databases:FolderName"];
         }
 
-        public SearchTreeNode QueryById(string databaseName, QueryByIdRequest request)
+        public async Task<SearchTreeNode> QueryById(string databaseName, QueryByIdRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path))
             {
                 throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
@@ -29,7 +29,7 @@ namespace db.Index.Operations
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
 
             var sTree = new SearchTree(collection);
-            var res = sTree.SearchById(request.RegisterId);
+            var res = await sTree.SearchById(request.RegisterId);
 
             try
             {
@@ -45,7 +45,7 @@ namespace db.Index.Operations
             }
         }
 
-        public List<QueryByPropertyResponse> QueryByProperty(string databaseName, QueryByPropertiesRequest request)
+        public async Task<List<QueryByPropertyResponse>> QueryByProperty(string databaseName, QueryByPropertiesRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
             if (!Directory.Exists(path))
@@ -56,7 +56,7 @@ namespace db.Index.Operations
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
 
-            var res = sTree.SearchByProperty(request.ConditionsBehavior, request.QueryConditions);
+            var res = await sTree.SearchByProperty(request.ConditionsBehavior, request.QueryConditions);
             var list = new List<QueryByPropertyResponse>();
 
             foreach (var item in res)

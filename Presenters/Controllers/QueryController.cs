@@ -24,11 +24,11 @@ namespace db.Presenters.Controllers
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetById(string DatabaseName, QueryByIdRequest request)
+        public async Task<IActionResult> GetById(string DatabaseName, QueryByIdRequest request)
         {
             try
             {
-                var res = queryOperations.QueryById(DatabaseName, request);
+                var res = await queryOperations.QueryById(DatabaseName, request);
                 return Content(res.Keys, "application/json");
             }
             catch (NotFoundException ex)
@@ -87,7 +87,7 @@ namespace db.Presenters.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch(DirectoryNotExistsException ex)
+            catch (DirectoryNotExistsException ex)
             {
                 return BadRequest(ex.Message);
             }

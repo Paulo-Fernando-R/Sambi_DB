@@ -2,6 +2,7 @@
 using db.Index.Exceptions;
 using db.Index.Expressions;
 using db.Presenters.Requests;
+using db.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO.Compression;
@@ -17,8 +18,10 @@ namespace db.Models
         {
             FileName = $"{fileName}.zip";
             Degree = 2;
+            var zip = new ZipFileManager(FileName);
+            var read = zip.ReadNode("Root");
 
-            var read = ReadNode("Root");
+            //var read = await ReadNode("Root");
             if (read != null)
             {
                 Root = read;
@@ -29,8 +32,12 @@ namespace db.Models
             }
         }
 
-        public void WriteNode(SearchTreeNode node)
+        public async Task WriteNode(SearchTreeNode node)
         {
+            var zip = new ZipFileManager(FileName);
+
+            await zip.WriteNodeAsync(node);
+            return;
 
             string serializedNode = node.Serialize();
 
@@ -58,13 +65,19 @@ namespace db.Models
                     writer.Close();
                 }
                 archive.Dispose();
-                
+
 
             }
         }
 
-        private SearchTreeNode ReadNode(string nodeId)
+        private async Task<SearchTreeNode> ReadNode(string nodeId)
         {
+            var zip = new ZipFileManager(FileName);
+
+            var a = await zip.ReadNodeAsync(nodeId);
+
+            return a;
+
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
             {
 
@@ -85,8 +98,16 @@ namespace db.Models
             }
         }
 
-        private List<SearchTreeNode> ReadNodes(int limit)
+        private async Task<List<SearchTreeNode>?> ReadNodes(int limit)
         {
+
+            var zip = new ZipFileManager(FileName);
+
+
+            var a = await zip.ReadNodes(limit);
+
+            return a;
+
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Read))
             {
                 var entries = archive.Entries;
@@ -114,9 +135,9 @@ namespace db.Models
             }
         }
 
-        public void GetKeys()
+        public async void GetKeys()
         {
-            var nodes = ReadNodes(1);
+            var nodes = await ReadNodes(1);
             var list = new List<dynamic>();
 
             foreach (SearchTreeNode node in nodes)
@@ -129,9 +150,9 @@ namespace db.Models
             Console.WriteLine(JsonConvert.SerializeObject(list));
         }
 
-        public List<SearchTreeNode> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
+        public async Task<List<SearchTreeNode>> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
         {
-            var nodes = ReadNodes(1);
+            var nodes = await ReadNodes(1);
             var list = new List<SearchTreeNode>();
 
             /*foreach (var node in nodes)
@@ -195,11 +216,11 @@ namespace db.Models
             return true;
         }
 
-        public void DeleteById(string id)
+        public async Task DeleteById(string id)
         {
             using (var archive = ZipFile.Open(FileName, ZipArchiveMode.Update))
             {
-                
+
                 var entry = archive.GetEntry(id);
 
                 if (entry == null)
@@ -209,25 +230,25 @@ namespace db.Models
                 }
 
                 //RemoveChildInParent(id, ReadNode("Root"));
-                RemoveChildInParent(id, Root);
+                await RemoveChildInParent(id, Root);
 
                 entry.Delete();
                 archive.Dispose();
             }
         }
 
-        private void RemoveChildInParent(string id, SearchTreeNode node)
+        private async Task RemoveChildInParent(string id, SearchTreeNode node)
         {
             if (node.ChildrenIds.Contains(id))
             {
                 node.ChildrenIds.Remove(id);
-                WriteNode(node);
+                await WriteNode(node);
                 return;
             }
 
             for (int i = 0; i < node.ChildrenIds.Count; i++)
             {
-                var newNode = ReadNode(node.ChildrenIds[i]);
+                var newNode = await ReadNode(node.ChildrenIds[i]);
 
                 if (newNode == null)
                 {
@@ -237,19 +258,19 @@ namespace db.Models
                 if (newNode.ChildrenIds.Contains(id))
                 {
                     newNode.ChildrenIds.Remove(id);
-                    WriteNode(newNode);
+                    await WriteNode(newNode);
                     return;
                 }
-                RemoveChildInParent(id, newNode);
+                await RemoveChildInParent(id, newNode);
             }
         }
 
-        public void Insert(string jsonData)
+        public async Task Insert(string jsonData)
         {
             if (Root.Keys == string.Empty)
             {
                 Root.Keys = jsonData;
-                WriteNode(Root);
+                await WriteNode(Root);
                 return;
             }
 
@@ -257,43 +278,43 @@ namespace db.Models
             {
                 var newNode = new SearchTreeNode(true, false, Degree);
                 newNode.Keys = jsonData;
-                WriteNode(newNode);
+                await WriteNode(newNode);
                 Root.isLeaf = false;
                 Root.ChildrenIds.Add(newNode.Id);
-                WriteNode(Root);
+                await WriteNode(Root);
                 return;
             }
 
-            string id = FindNonFullNode(Root.ChildrenIds);
+            string id = await FindNonFullNode(Root.ChildrenIds);
 
             if (id == null || id == string.Empty) return;
             //TODO
 
-            var node = ReadNode(id);
+            var node = await ReadNode(id);
 
             if (node.Keys == string.Empty)
             {
                 node.Keys = jsonData;
-                WriteNode(node);
+                await WriteNode(node);
             }
             else
             {
                 var newNode = new SearchTreeNode(true, false, Degree);
                 newNode.Keys = jsonData;
-                WriteNode(newNode);
+                await WriteNode(newNode);
                 node.isLeaf = false;
                 node.ChildrenIds.Add(newNode.Id);
-                WriteNode(node);
+                await WriteNode(node);
             }
 
         }
 
-        public SearchTreeNode SearchById(string registerId)
+        public async Task<SearchTreeNode> SearchById(string registerId)
         {
 
             try
             {
-                var node = ReadNode(registerId);
+                var node = await ReadNode(registerId);
                 return node;
             }
             catch (System.IO.FileNotFoundException ex)
@@ -310,20 +331,20 @@ namespace db.Models
             }
         }
 
-        public void GetAll()
+        public async void GetAll()
         {
             var nodes = ReadNodes(5);
 
             Console.WriteLine(JsonConvert.SerializeObject(nodes));
         }
 
-        private string FindNonFullNode(List<string> nodes)
+        private async Task<string> FindNonFullNode(List<string> nodes)
         {
             string id = string.Empty;
 
             for (int i = 0; i < nodes.Count; i++)
             {
-                var node = ReadNode(nodes[i]);
+                var node = await ReadNode(nodes[i]);
 
                 if (node.Keys == string.Empty)
                 {
@@ -342,7 +363,7 @@ namespace db.Models
 
                 if (id == string.Empty)
                 {
-                    FindNonFullNode(node.ChildrenIds);
+                    await FindNonFullNode(node.ChildrenIds);
                 }
             }
             return id;

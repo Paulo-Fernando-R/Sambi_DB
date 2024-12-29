@@ -20,12 +20,12 @@ namespace db.Presenters.Controllers
         [Route("[controller]/Create/{DatabaseName}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Create(string DatabaseName, RegisterCreateRequest request)
+        public async Task<IActionResult> Create(string DatabaseName, RegisterCreateRequest request)
         {
 
             try
             {
-                registerOperations.Create(DatabaseName, request);
+                await registerOperations.Create(DatabaseName, request);
                 return Ok($"Register added sucessfully into '{request.CollectionName}' collection");
             }
             catch (DirectoryNotExistsException ex)
@@ -54,11 +54,11 @@ namespace db.Presenters.Controllers
         [Route("[controller]/Delete/{DatabaseName}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Delete(string DatabaseName, RegisterDeleteRequest request)
+        public async  Task<IActionResult> Delete(string DatabaseName, RegisterDeleteRequest request)
         {
             try
             {
-                registerOperations.Delete(DatabaseName, request);
+                await registerOperations.Delete(DatabaseName, request);
                 return Ok($"Register '{request.RegisterId}' deleted sucessfully into '{request.CollectionName}' collection");
             }
             catch (DirectoryNotExistsException ex)
