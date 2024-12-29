@@ -1,11 +1,9 @@
-﻿using db.Index.Enums;
-using db.Index.Exceptions;
+﻿using db.Index.Exceptions;
 using db.Index.Expressions;
 using db.Presenters.Requests;
 using db.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO.Compression;
 namespace db.Models
 {
     public class SearchTree
@@ -73,7 +71,7 @@ namespace db.Models
             var nodes = await ReadNodes(1);
             var list = new List<SearchTreeNode>();
 
-            if(nodes == null)
+            if (nodes == null)
             {
                 return list;
             }
@@ -82,7 +80,7 @@ namespace db.Models
             {
                 var item = new JObject(x.DynamicKeys());
                 return DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
-           
+
             }).ToList();
 
             return list;
@@ -91,8 +89,21 @@ namespace db.Models
 
         public async Task DeleteById(string id)
         {
+            var deleted = await ReadNode(id);
+            if (deleted == null)
+            {
+                throw new NotFoundException($"Register '{id}' not exists");
+            }
+
             await zipFileManager.DeleteNodeAsync(id);
             await RemoveChildInParent(id, Root);
+
+            for (var i = 0; i < deleted.ChildrenIds.Count; i++)
+            {
+                var readed = await ReadNode(deleted.ChildrenIds[i]);
+                if (readed != null)
+                    await Relocate(readed);
+            }
         }
 
         private async Task RemoveChildInParent(string id, SearchTreeNode node)
@@ -185,7 +196,45 @@ namespace db.Models
 
         }
 
-       
+        public async Task Relocate(SearchTreeNode item)
+        {
+
+            if (Root.ChildrenIds.Count < Degree)
+            {
+                var newNode = new SearchTreeNode(true, false, Degree);
+                newNode.Keys = item.Keys;
+                await WriteNode(newNode);
+                Root.isLeaf = false;
+                Root.ChildrenIds.Add(newNode.Id);
+                await WriteNode(Root);
+                return;
+            }
+
+            string? id = await FindNonFullNode(Root.ChildrenIds);
+
+            if (id == null) return;
+            //TODO
+
+            var node = await ReadNode(id);
+
+            if (node.Keys == string.Empty)
+            {
+                node.Keys = item.Keys;
+                node.Id = item.Id;
+                await WriteNode(node);
+            }
+            else
+            {
+                var newNode = new SearchTreeNode(true, false, Degree) { Id = item.Id };
+                newNode.Keys = item.Keys;
+                await WriteNode(newNode);
+                node.isLeaf = false;
+                node.ChildrenIds.Add(newNode.Id);
+                await WriteNode(node);
+            }
+        }
+
+
 
         private async Task<string?> FindNonFullNode(List<string> nodes)
         {
@@ -195,7 +244,7 @@ namespace db.Models
             {
                 var node = await ReadNode(nodes[i]);
 
-                if(node == null)
+                if (node == null)
                 {
                     await RemoveChildInParent(nodes[i], Root);
                     continue;
@@ -218,7 +267,7 @@ namespace db.Models
 
                 if (id == null)
                 {
-                   id = await FindNonFullNode(node.ChildrenIds);
+                    id = await FindNonFullNode(node.ChildrenIds);
                 }
 
                 break;
