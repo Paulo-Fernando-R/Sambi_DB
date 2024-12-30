@@ -1,6 +1,8 @@
 ﻿using db.Index.Exceptions;
 using db.Models;
 using db.Presenters.Requests;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace db.Index.Operations
 {
@@ -46,6 +48,31 @@ namespace db.Index.Operations
             var sTree = new SearchTree(collection);
             await sTree.DeleteById(request.RegisterId);
 
+        }
+
+        public async Task Update(string databaseName, RegisterUpdateRequest request)
+        {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
+            string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+
+            var sTree = new SearchTree(collection);
+
+            var data = request.Data.ToString();
+
+            if (data == null)
+            {
+                throw new BadRequestException("'Data' is required");
+            }
+
+            var parsed = JsonConvert.DeserializeObject<JObject>(data);
+
+            await sTree.Update(request.RegisterId, parsed);
         }
     }
 }

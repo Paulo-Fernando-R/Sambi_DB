@@ -4,6 +4,7 @@ using db.Presenters.Requests;
 using db.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Data;
 namespace db.Models
 {
     public class SearchTree
@@ -53,18 +54,6 @@ namespace db.Models
 
         }
 
-        public async void GetKeys()
-        {
-            var nodes = await ReadNodes(1);
-            var list = new List<dynamic>();
-
-            foreach (SearchTreeNode node in nodes)
-            {
-                list.Add(node.DynamicKeys());
-            }
-
-            Console.WriteLine(JsonConvert.SerializeObject(list));
-        }
 
         public async Task<List<SearchTreeNode>> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
         {
@@ -150,6 +139,35 @@ namespace db.Models
             {
                 throw new InternalServerErrorException(ex.Message);
             }
+        }
+
+        public async Task Update(string id, JObject newData)
+        {
+
+            var node = await ReadNode(id);
+
+            if (node == null)
+            {
+                throw new NotFoundException($"Register '{id}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+            
+
+            foreach (var item in newData)
+            {
+                if (oldData.ContainsKey(item.Key))
+                {
+                    oldData[item.Key] = item.Value;
+                }
+                else
+                {
+                    oldData.TryAdd(item.Key, item.Value);
+                }
+
+            }
+            node.Keys = JsonConvert.SerializeObject(oldData);
+            await WriteNode(node);
         }
 
         public async Task Insert(string jsonData)

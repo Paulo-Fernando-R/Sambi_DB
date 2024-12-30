@@ -45,16 +45,39 @@ namespace db.Presenters.Controllers
         [Route("[controller]/Update/{DatabaseName}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Update()
+        public async Task<IActionResult> Update(string DatabaseName, RegisterUpdateRequest request)
         {
-            return Ok();
+
+            try
+            {
+                await registerOperations.Update(DatabaseName, request);
+                return Ok();
+            }
+            catch (DirectoryNotExistsException ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpDelete]
         [Route("[controller]/Delete/{DatabaseName}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async  Task<IActionResult> Delete(string DatabaseName, RegisterDeleteRequest request)
+        public async Task<IActionResult> Delete(string DatabaseName, RegisterDeleteRequest request)
         {
             try
             {
