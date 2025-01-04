@@ -2,9 +2,9 @@
 {
     public class RegisterDeleteRequest
     {
-        public string RegisterId { get; set; }
-        public string CollectionName { get; set; }
-        public bool Confirm { get; set; }
+        public required string RegisterId { get; set; }
+        public required string CollectionName { get; set; }
+        public required bool Confirm { get; set; }
 
         public RegisterDeleteRequest()
         {

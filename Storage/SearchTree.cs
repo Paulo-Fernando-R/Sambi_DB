@@ -152,7 +152,7 @@ namespace db.Models
             }
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
-            
+
 
             foreach (var item in newData)
             {
@@ -170,14 +170,113 @@ namespace db.Models
             await WriteNode(node);
         }
 
+        public async Task<int> UpdateArray(RegisterUpdateArrayRequest request)
+        {
+            var node = await ReadNode(request.RegisterId);
+            int affectedItems = 0;
+
+            if (node == null)
+            {
+                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            if (!oldData.ContainsKey(request.ArrayName))
+            {
+                throw new BadRequestException($"Property '{request.Property}' not exists");
+            }
+
+            var arr = oldData[request.ArrayName];
+
+            for (var i = 0; i < arr.Count(); i++)
+            {
+                var item = arr[i];
+                var aux = item[request.Property];
+
+                if (aux == null)
+                {
+                    continue;
+                }
+
+                if (aux.ToString() == request.Value)
+                {
+                    item[request.Property] = request.NewValue.ToString();
+                    arr[i] = item;
+                    affectedItems++;    
+                }
+
+
+                Console.WriteLine(aux);
+            }
+
+            if(affectedItems == 0)
+            {
+                return affectedItems;
+            }
+
+            oldData[request.ArrayName] = arr;
+            node.Keys = oldData.ToString();
+
+            await WriteNode(node);
+            return affectedItems;
+
+        }
+
+        public async Task<int> DeleteArray(RegisterDeleteArrayRequest request)
+        {
+            var node = await ReadNode(request.RegisterId);
+            int affectedItems = 0;
+
+            if (node == null)
+            {
+                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            if (!oldData.ContainsKey(request.ArrayName))
+            {
+                throw new BadRequestException($"Property '{request.Property}' not exists");
+            }
+
+            var arr = oldData[request.ArrayName];
+
+            for (var i = 0; i < arr.Count(); i++)
+            {
+                var item = arr[i];
+                var aux = item[request.Property];
+
+                if (aux == null)
+                {
+                    continue;
+                }
+
+                if (aux.ToString() == request.Value)
+                {
+                    arr[i].Remove();
+                    affectedItems++;
+                }
+
+
+                Console.WriteLine(aux);
+            }
+
+            if (affectedItems == 0)
+            {
+                return affectedItems;
+            }
+
+            oldData[request.ArrayName] = arr;
+            node.Keys = oldData.ToString();
+
+            await WriteNode(node);
+            return affectedItems;
+
+        }
+
         public async Task Insert(string jsonData)
         {
-            /*if (Root.Keys == string.Empty)
-            {
-                Root.Keys = jsonData;
-                await WriteNode(Root);
-                return;
-            }*/
 
             if (Root.ChildrenIds.Count < Degree)
             {

@@ -50,6 +50,40 @@ namespace db.Index.Operations
 
         }
 
+        public async Task<int> UpdateArray(string databaseName, RegisterUpdateArrayRequest request)
+        {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
+            string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+            var sTree = new SearchTree(collection);
+            int res = await sTree.UpdateArray(request);
+
+            return res;
+
+        }
+
+        public async Task<int> DeleteArray(string databaseName, RegisterDeleteArrayRequest request)
+        {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
+            string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+            var sTree = new SearchTree(collection);
+            int res = await sTree.DeleteArray(request);
+
+            return res;
+
+        }
+
         public async Task Update(string databaseName, RegisterUpdateRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
