@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 namespace db.Presenters.Controllers
 {
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class QueryController : ControllerBase
     {
         private readonly ILogger<QueryController> _logger;
@@ -21,12 +24,11 @@ namespace db.Presenters.Controllers
 
         [HttpPost]
         [Route("[controller]/ById/{DatabaseName}")]
-        [Produces("application/json")]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        
         public async Task<IActionResult> GetById(string DatabaseName, QueryByIdRequest request)
         {
             try
+            //Adicionar um midleware para gerenciar as excessões ao invés de fazer diretamente no controller
             {
                 var res = await queryOperations.QueryById(DatabaseName, request);
                 return Content(res.Keys, "application/json");

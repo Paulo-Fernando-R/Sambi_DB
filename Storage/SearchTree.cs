@@ -153,7 +153,7 @@ namespace db.Models
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
 
-
+            //TODO Alterar foreach para função
             foreach (var item in newData)
             {
                 if (oldData.ContainsKey(item.Key))
@@ -270,6 +270,27 @@ namespace db.Models
             }
 
             var arr = oldData[request.ArrayName];
+
+            // TODO Testar se está funcionando by Ferreira
+           /* var a = arr.Where(e =>
+            {
+
+                var aux = e[request.Property];
+
+                if (aux == null)
+                {
+                    return false;
+                }
+                if (aux.ToString() == request.Value) { return true; }
+                return false;
+            });
+
+            foreach (var item in a)
+            {
+                arr[item].Remove();
+                affectedItems++;
+            }*/
+            //
 
             for (var i = 0; i < arr.Count(); i++)
             {

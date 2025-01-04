@@ -8,6 +8,7 @@ namespace db.Models
         public bool IsRoot { get; set; }
         public bool isLeaf { get; set; }
         public string Keys { get; set; }
+        //TODO Mudar keys para dicionario ao inves de string Dicionary<String, dynamic> d = new();
         public List<String> ChildrenIds { get; set; }
         public int degree { get; set; }
 

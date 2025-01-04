@@ -20,6 +20,7 @@ namespace db.Index.Operations
 
         public async Task<SearchTreeNode> QueryById(string databaseName, QueryByIdRequest request)
         {
+            // TODO Criar classe util para verificar caminho
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
             if (!Directory.Exists(path))
             {

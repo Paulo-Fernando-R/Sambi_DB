@@ -6,7 +6,8 @@ namespace db.Index.Expressions
 {
     public static class DynamicOperatorMapper
     {
-
+        //TODO Alterar arrow functions para funções comuns 
+        //TODO Adicionar métodos de extensão https://learn.microsoft.com/pt-br/dotnet/csharp/programming-guide/classes-and-structs/extension-methods
         public static readonly Dictionary<string, Func<JObject, string, string, string, bool>> OperationsDictionary = new Dictionary<string, Func<JObject, string, string, string, bool>>
         {
             [OperatorsEnum.Equal.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
