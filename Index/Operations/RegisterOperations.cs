@@ -50,6 +50,23 @@ namespace db.Index.Operations
 
         }
 
+        public async Task AddArray(string databaseName, RegisterCreateArrayRequest request)
+        {
+            string path = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(path))
+            {
+                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+            }
+
+            string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+            var sTree = new SearchTree(collection);
+            await sTree.AddArray(request);
+
+
+
+        }
+
         public async Task<int> UpdateArray(string databaseName, RegisterUpdateArrayRequest request)
         {
             string path = Path.Combine(currentDir, parentFolderName, databaseName);

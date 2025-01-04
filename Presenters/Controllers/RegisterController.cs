@@ -104,6 +104,33 @@ namespace db.Presenters.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("[controller]/Add/Array/{DatabaseName}")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddArray(string DatabaseName, RegisterCreateArrayRequest request)
+        { 
+
+            try
+            {
+                await registerOperations.AddArray(DatabaseName, request);
+                return Ok($"Item added to Register '{request.RegisterId}:{request.ArrayName}' sucessfully into '{request.CollectionName}' collection");
+            }
+            catch (DirectoryNotExistsException ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
+            catch (NotFoundException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPut]
         [Route("[controller]/Update/Array/{DatabaseName}")]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

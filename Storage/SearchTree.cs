@@ -170,6 +170,35 @@ namespace db.Models
             await WriteNode(node);
         }
 
+        public async Task AddArray(RegisterCreateArrayRequest request)
+        {
+            var node = await ReadNode(request.RegisterId);
+
+            if (node == null)
+            {
+                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            if (!oldData.ContainsKey(request.ArrayName))
+            {
+                oldData.Add(request.ArrayName, new JArray());
+            }
+
+
+            JArray? extracted = oldData[request.ArrayName].ToObject<JArray>();
+            JToken? converted = JsonConvert.DeserializeObject<JToken>(request.Data.ToString() ?? "");
+            IEnumerable<JToken?> arr = extracted.Append(converted);
+
+
+            oldData[request.ArrayName] = JToken.FromObject(arr);
+            node.Keys = oldData.ToString();
+
+            await WriteNode(node);
+
+        }
+
         public async Task<int> UpdateArray(RegisterUpdateArrayRequest request)
         {
             var node = await ReadNode(request.RegisterId);
@@ -203,14 +232,14 @@ namespace db.Models
                 {
                     item[request.Property] = request.NewValue.ToString();
                     arr[i] = item;
-                    affectedItems++;    
+                    affectedItems++;
                 }
 
 
                 Console.WriteLine(aux);
             }
 
-            if(affectedItems == 0)
+            if (affectedItems == 0)
             {
                 return affectedItems;
             }
