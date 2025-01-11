@@ -64,6 +64,7 @@ namespace db.Storage
                     if (entry == null)
                     {
                         archive.Dispose();
+                        throw new NotFoundException(what: "Register", identification: id);
                         throw new NotFoundException($"Register '{id}' not exists");
                     }
 
@@ -81,7 +82,7 @@ namespace db.Storage
                 Semaphore.Release();
                 ReadSemaphore.Release();
             }
-            
+
         }
 
         public async Task<SearchTreeNode?> ReadNodeAsync(string nodeId)

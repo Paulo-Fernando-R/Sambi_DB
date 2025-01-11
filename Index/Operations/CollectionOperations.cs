@@ -22,9 +22,10 @@ namespace db.Index.Operations
         {
             string databasePath = Path.Combine(currentDir, parentFolderName, databaseName);
 
-            if(!Directory.Exists(databasePath))
+            if (!Directory.Exists(databasePath))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string newCollection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -32,7 +33,9 @@ namespace db.Index.Operations
 
             if (File.Exists(newCollection))
             {
-                throw new AlreadyExistsException($"Collection '{request.CollectionName}' already exists");
+                throw new AlreadyExistsException(what: "Collection", identification: request.CollectionName, where: databaseName);
+                //   throw new AlreadyExistsException($"Collection '{request.CollectionName}' already exists");
+
             }
 
             using (var archive = ZipFile.Open(newCollection, ZipArchiveMode.Create)) { }
@@ -45,7 +48,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(databasePath))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, collectionName);
@@ -53,12 +57,13 @@ namespace db.Index.Operations
 
             if (!File.Exists(collection))
             {
-                throw new DirectoryNotExistsException($"Collection '{collectionName}' not exists");
+                throw new DirectoryNotExistsException(what: "Collection", identification: collectionName);
+                // throw new DirectoryNotExistsException($"Collection '{collectionName}' not exists");
             }
 
             File.Delete(collection);
 
-            
+
 
         }
 
@@ -68,7 +73,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(databasePath))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, collectionName);
@@ -79,12 +85,14 @@ namespace db.Index.Operations
 
             if (!File.Exists(collection))
             {
-                throw new DirectoryNotExistsException($"Collection '{collectionName}' not exists");
+                throw new DirectoryNotExistsException(what: "Collection", identification: newCollectionName);
+                // throw new DirectoryNotExistsException($"Collection '{collectionName}' not exists");
             }
 
             if (File.Exists(newCollection))
             {
-                throw new AlreadyExistsException($"Collection '{newCollectionName}' already exists");
+                throw new AlreadyExistsException(what: "Collection", identification: newCollectionName, where: databaseName);
+                // throw new AlreadyExistsException($"Collection '{newCollectionName}' already exists");
             }
 
             File.Move(collection, newCollection);

@@ -24,7 +24,8 @@ namespace db.Index.Operations
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -36,7 +37,8 @@ namespace db.Index.Operations
             {
                 if (res == null)
                 {
-                    throw new NotFoundException($"Register '{request.RegisterId}' not found.");
+                    throw new NotFoundException(what: "Register", identification: request.RegisterId, where: request.CollectionName);
+                    // throw new NotFoundException($"Register '{request.RegisterId}' not found.");
                 }
                 return res;
             }
@@ -51,7 +53,8 @@ namespace db.Index.Operations
             string path = Path.Combine(currentDir, parentFolderName, databaseName);
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+               // throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);

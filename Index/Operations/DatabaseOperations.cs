@@ -22,7 +22,8 @@ namespace db.Index.Operations
 
             if (Directory.Exists(newFolderPath))
             {
-                throw new AlreadyExistsException($"Database '{request.DatabaseName}' already exists");
+                throw new AlreadyExistsException(what: "Database", identification: request.DatabaseName);
+                // throw new AlreadyExistsException($"Database '{request.DatabaseName}' already exists");
             }
 
             Directory.CreateDirectory(newFolderPath);
@@ -37,8 +38,8 @@ namespace db.Index.Operations
                 Directory.Delete(newFolderPath, true);
                 return;
             }
-
-            throw new DirectoryNotExistsException($"Database '{databaseName}' does not exist");
+            throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+           // throw new DirectoryNotExistsException($"Database '{databaseName}' does not exist");
         }
     }
 }

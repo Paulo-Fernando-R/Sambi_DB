@@ -25,7 +25,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -41,7 +42,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -56,7 +58,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -73,7 +76,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -90,7 +94,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -107,7 +112,8 @@ namespace db.Index.Operations
 
             if (!Directory.Exists(path))
             {
-                throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+                //throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
@@ -118,7 +124,8 @@ namespace db.Index.Operations
 
             if (data == null)
             {
-                throw new BadRequestException("'Data' is required");
+                throw new BadRequestException(identification: "Data", rule: "required");
+                //throw new BadRequestException("'Data' is required");
             }
 
             var parsed = JsonConvert.DeserializeObject<JObject>(data);

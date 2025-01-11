@@ -81,7 +81,8 @@ namespace db.Models
             var deleted = await ReadNode(id);
             if (deleted == null)
             {
-                throw new NotFoundException($"Register '{id}' not exists");
+                throw new NotFoundException(what: "Register", identification: id);
+                //throw new NotFoundException($"Register '{id}' not exists");
             }
 
             await zipFileManager.DeleteNodeAsync(id);
@@ -148,7 +149,8 @@ namespace db.Models
 
             if (node == null)
             {
-                throw new NotFoundException($"Register '{id}' not exists");
+                throw new NotFoundException(what: "Register", identification: id);
+                // throw new NotFoundException($"Register '{id}' not exists");
             }
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
@@ -176,7 +178,8 @@ namespace db.Models
 
             if (node == null)
             {
-                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+                throw new NotFoundException(what: "Register", identification: request.RegisterId);
+                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
             }
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
@@ -206,14 +209,16 @@ namespace db.Models
 
             if (node == null)
             {
-                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+                throw new NotFoundException(what: "Register", identification: request.RegisterId);
+                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
             }
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
 
             if (!oldData.ContainsKey(request.ArrayName))
             {
-                throw new BadRequestException($"Property '{request.Property}' not exists");
+                throw new BadRequestException(identification: request.Property, rule: "not exists", where: request.ArrayName);
+                //throw new BadRequestException($"Property '{request.Property}' not exists");
             }
 
             var arr = oldData[request.ArrayName];
@@ -259,37 +264,39 @@ namespace db.Models
 
             if (node == null)
             {
-                throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+                throw new NotFoundException(what: "Register", identification: request.RegisterId, where: request.CollectionName);
+                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
             }
 
             var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
 
             if (!oldData.ContainsKey(request.ArrayName))
             {
-                throw new BadRequestException($"Property '{request.Property}' not exists");
+                throw new BadRequestException(identification: request.Property, rule: "not exists", where: request.ArrayName);
+                //throw new BadRequestException($"Property '{request.Property}' not exists");
             }
 
             var arr = oldData[request.ArrayName];
 
             // TODO Testar se está funcionando by Ferreira
-           /* var a = arr.Where(e =>
-            {
+            /* var a = arr.Where(e =>
+             {
 
-                var aux = e[request.Property];
+                 var aux = e[request.Property];
 
-                if (aux == null)
-                {
-                    return false;
-                }
-                if (aux.ToString() == request.Value) { return true; }
-                return false;
-            });
+                 if (aux == null)
+                 {
+                     return false;
+                 }
+                 if (aux.ToString() == request.Value) { return true; }
+                 return false;
+             });
 
-            foreach (var item in a)
-            {
-                arr[item].Remove();
-                affectedItems++;
-            }*/
+             foreach (var item in a)
+             {
+                 arr[item].Remove();
+                 affectedItems++;
+             }*/
             //
 
             for (var i = 0; i < arr.Count(); i++)
