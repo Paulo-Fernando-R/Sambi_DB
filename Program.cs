@@ -7,13 +7,27 @@ string currentDir = AppDomain.CurrentDomain.BaseDirectory;
 string folderName = builder.Configuration.GetSection("Databases").GetValue<string>("FolderName");
 string folderPath = Path.Combine(currentDir, folderName);
 
+string adminDir = builder.Configuration.GetSection("Admin").GetValue<string>("Directory");
+
+
 // Add services to the container.
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(x =>
 {
     x.SwaggerDoc("v1", new OpenApiInfo { Title = "SambiDb", Version = "v1" });
+});
+
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddTransient<DatabaseOperations>();
@@ -26,14 +40,18 @@ if (!Directory.Exists(folderPath))
     Directory.CreateDirectory(folderPath);
 }
 
+if (!Directory.Exists(adminDir))
+{
+    Directory.CreateDirectory(adminDir);
+}
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-/*if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}*/
+
+app.UseCors("AllowAll");
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -41,6 +59,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapFallbackToFile("index.html");
+
 app.MapControllers();
+
+
 
 app.Run();
