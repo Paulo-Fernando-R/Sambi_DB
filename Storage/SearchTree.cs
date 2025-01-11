@@ -134,7 +134,9 @@ namespace db.Models
             }
             catch (System.IO.FileNotFoundException)
             {
-                throw new InternalServerErrorException($"Collection {FileName} not exists.");
+                throw new DirectoryNotExistsException(what: "Collection", identification: FileName);
+                //throw new InternalServerErrorException($"Collection {FileName} not exists.");
+
             }
             catch (Exception ex)
             {

@@ -108,7 +108,8 @@ namespace db.Index.Expressions
                 {
                     return valueFloat > float.Parse(value);
                 }
-                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+                throw new OperationNotAllowedException(operation: operation, violation: "is allowed only for Number values");
+                //throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
             },
 
             [OperatorsEnum.GreaterOrEqualThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
@@ -120,7 +121,8 @@ namespace db.Index.Expressions
                 {
                     return (float)x[property] >= float.Parse(value);
                 }
-                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+                throw new OperationNotAllowedException(operation: operation, violation: "is allowed only for Number values");
+                //throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
             },
 
             [OperatorsEnum.LessThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
@@ -132,7 +134,8 @@ namespace db.Index.Expressions
                 {
                     return (float)x[property] < float.Parse(value);
                 }
-                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+                throw new OperationNotAllowedException(operation: operation, violation: "is allowed only for Number values");
+                //throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
             },
 
             [OperatorsEnum.LessOrEqualThan.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
@@ -144,7 +147,8 @@ namespace db.Index.Expressions
                 {
                     return (float)x[property] <= float.Parse(value);
                 }
-                throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
+                throw new OperationNotAllowedException(operation: operation, violation: "is allowed only for Number values");
+                //throw new OperationNotAllowedException($"Operation {operation} is allowed only for Number values");
             },
 
             [OperatorsEnum.Like.ToDescriptionString()] = (JObject x, string property, string value, string operation) =>
@@ -175,7 +179,8 @@ namespace db.Index.Expressions
             {
                 return result;
             }
-            throw new OperationNotAllowedException($"Operator '{operation}' is not allowed");
+            throw new OperationNotAllowedException(operation: operation, violation: "is not suported");
+            //throw new OperationNotAllowedException($"Operator '{operation}' is not allowed");
         }
 
         public static bool ExecuteAllConditions(JObject item, string logicOperator, List<QueryByPropertiesConditions> conditions)
@@ -193,7 +198,8 @@ namespace db.Index.Expressions
             }
             else
             {
-                throw new OperationNotAllowedException($"The operator '{logicOperator}' is not allowed");
+                throw new OperationNotAllowedException(operation: logicOperator, violation: "is not suported");
+                //throw new OperationNotAllowedException($"The operator '{logicOperator}' is not allowed");
             }
 
 
