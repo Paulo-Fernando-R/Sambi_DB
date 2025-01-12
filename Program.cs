@@ -1,4 +1,5 @@
 using db.Index.Operations;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,7 @@ app.MapFallbackToFile("index.html");
 
 app.MapControllers();
 
+//Standalone build = dotnet publish -c Release -r win-x64 --self-contained
 
-
-app.Run();
+app.Run("http://localhost:5000");
+//app.Run();

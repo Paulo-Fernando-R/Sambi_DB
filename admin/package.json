@@ -8,8 +8,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "copy-build": "xcopy /s /y dist \"../bin/Debug/net8.0/wwwroot\"/E /I",
+    "preview": "vite preview"
+
   },
   "dependencies": {
     "react": "^18.3.1",
