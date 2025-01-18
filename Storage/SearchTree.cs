@@ -9,6 +9,7 @@ namespace db.Models
 {
     public class SearchTree
     {
+        #region Init
         private readonly string FileName; //= "SeachTreeStorage.zip";
         private readonly int Degree;
         private readonly ZipFileManager zipFileManager;
@@ -32,6 +33,10 @@ namespace db.Models
             }
         }
 
+        #endregion Init
+
+
+        #region FileAccess
         public async Task WriteNode(SearchTreeNode node)
         {
             var zip = new ZipFileManager(FileName);
@@ -53,7 +58,29 @@ namespace db.Models
             return a;
 
         }
+        #endregion FileAccess
 
+
+        #region Search
+        public async Task<SearchTreeNode?> SearchById(string registerId)
+        {
+
+            try
+            {
+                var node = await ReadNode(registerId);
+                return node;
+            }
+            catch (System.IO.FileNotFoundException)
+            {
+                throw new DirectoryNotExistsException(what: "Collection", identification: FileName);
+                //throw new InternalServerErrorException($"Collection {FileName} not exists.");
+
+            }
+            catch (Exception ex)
+            {
+                throw new InternalServerErrorException(ex.Message);
+            }
+        }
 
         public async Task<List<SearchTreeNode>> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
         {
@@ -76,6 +103,10 @@ namespace db.Models
 
         }
 
+        #endregion Search
+
+
+        #region Delete
         public async Task DeleteById(string id)
         {
             var deleted = await ReadNode(id);
@@ -122,141 +153,6 @@ namespace db.Models
                 }
                 await RemoveChildInParent(id, newNode);
             }
-        }
-
-        public async Task<SearchTreeNode?> SearchById(string registerId)
-        {
-
-            try
-            {
-                var node = await ReadNode(registerId);
-                return node;
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                throw new DirectoryNotExistsException(what: "Collection", identification: FileName);
-                //throw new InternalServerErrorException($"Collection {FileName} not exists.");
-
-            }
-            catch (Exception ex)
-            {
-                throw new InternalServerErrorException(ex.Message);
-            }
-        }
-
-        public async Task Update(string id, JObject newData)
-        {
-
-            var node = await ReadNode(id);
-
-            if (node == null)
-            {
-                throw new NotFoundException(what: "Register", identification: id);
-                // throw new NotFoundException($"Register '{id}' not exists");
-            }
-
-            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
-
-            //TODO Alterar foreach para função
-            foreach (var item in newData)
-            {
-                if (oldData.ContainsKey(item.Key))
-                {
-                    oldData[item.Key] = item.Value;
-                }
-                else
-                {
-                    oldData.TryAdd(item.Key, item.Value);
-                }
-
-            }
-            node.Keys = JsonConvert.SerializeObject(oldData);
-            await WriteNode(node);
-        }
-
-        public async Task AddArray(RegisterCreateArrayRequest request)
-        {
-            var node = await ReadNode(request.RegisterId);
-
-            if (node == null)
-            {
-                throw new NotFoundException(what: "Register", identification: request.RegisterId);
-                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
-            }
-
-            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
-
-            if (!oldData.ContainsKey(request.ArrayName))
-            {
-                oldData.Add(request.ArrayName, new JArray());
-            }
-
-
-            JArray? extracted = oldData[request.ArrayName].ToObject<JArray>();
-            JToken? converted = JsonConvert.DeserializeObject<JToken>(request.Data.ToString() ?? "");
-            IEnumerable<JToken?> arr = extracted.Append(converted);
-
-
-            oldData[request.ArrayName] = JToken.FromObject(arr);
-            node.Keys = oldData.ToString();
-
-            await WriteNode(node);
-
-        }
-
-        public async Task<int> UpdateArray(RegisterUpdateArrayRequest request)
-        {
-            var node = await ReadNode(request.RegisterId);
-            int affectedItems = 0;
-
-            if (node == null)
-            {
-                throw new NotFoundException(what: "Register", identification: request.RegisterId);
-                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
-            }
-
-            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
-
-            if (!oldData.ContainsKey(request.ArrayName))
-            {
-                throw new BadRequestException(identification: request.Property, rule: "not exists", where: request.ArrayName);
-                //throw new BadRequestException($"Property '{request.Property}' not exists");
-            }
-
-            var arr = oldData[request.ArrayName];
-
-            for (var i = 0; i < arr.Count(); i++)
-            {
-                var item = arr[i];
-                var aux = item[request.Property];
-
-                if (aux == null)
-                {
-                    continue;
-                }
-
-                if (aux.ToString() == request.Value)
-                {
-                    item[request.Property] = request.NewValue.ToString();
-                    arr[i] = item;
-                    affectedItems++;
-                }
-
-
-                Console.WriteLine(aux);
-            }
-
-            if (affectedItems == 0)
-            {
-                return affectedItems;
-            }
-
-            oldData[request.ArrayName] = arr;
-            node.Keys = oldData.ToString();
-
-            await WriteNode(node);
-            return affectedItems;
-
         }
 
         public async Task<int> DeleteArray(RegisterDeleteArrayRequest request)
@@ -334,42 +230,38 @@ namespace db.Models
 
         }
 
-        public async Task Insert(string jsonData)
+        #endregion Delete
+
+
+        #region Update
+        public async Task Update(string id, JObject newData)
         {
-
-            if (Root.ChildrenIds.Count < Degree)
-            {
-                var newNode = new SearchTreeNode(true, false, Degree);
-                newNode.Keys = jsonData;
-                await WriteNode(newNode);
-                Root.isLeaf = false;
-                Root.ChildrenIds.Add(newNode.Id);
-                await WriteNode(Root);
-                return;
-            }
-
-            string? id = await FindNonFullNode(Root.ChildrenIds);
-
-            if (id == null) return;
-            //TODO
 
             var node = await ReadNode(id);
 
-            if (node.Keys == string.Empty)
+            if (node == null)
             {
-                node.Keys = jsonData;
-                await WriteNode(node);
-            }
-            else
-            {
-                var newNode = new SearchTreeNode(true, false, Degree);
-                newNode.Keys = jsonData;
-                await WriteNode(newNode);
-                node.isLeaf = false;
-                node.ChildrenIds.Add(newNode.Id);
-                await WriteNode(node);
+                throw new NotFoundException(what: "Register", identification: id);
+                // throw new NotFoundException($"Register '{id}' not exists");
             }
 
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            //TODO Alterar foreach para função
+            foreach (var item in newData)
+            {
+                if (oldData.ContainsKey(item.Key))
+                {
+                    oldData[item.Key] = item.Value;
+                }
+                else
+                {
+                    oldData.TryAdd(item.Key, item.Value);
+                }
+
+            }
+            node.Keys = JsonConvert.SerializeObject(oldData);
+            await WriteNode(node);
         }
 
         public async Task Relocate(SearchTreeNode item)
@@ -410,6 +302,102 @@ namespace db.Models
             }
         }
 
+        public async Task<int> UpdateArray(RegisterUpdateArrayRequest request)
+        {
+            var node = await ReadNode(request.RegisterId);
+            int affectedItems = 0;
+
+            if (node == null)
+            {
+                throw new NotFoundException(what: "Register", identification: request.RegisterId);
+                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            if (!oldData.ContainsKey(request.ArrayName))
+            {
+                throw new BadRequestException(identification: request.Property, rule: "not exists", where: request.ArrayName);
+                //throw new BadRequestException($"Property '{request.Property}' not exists");
+            }
+
+            var arr = oldData[request.ArrayName];
+
+            for (var i = 0; i < arr.Count(); i++)
+            {
+                var item = arr[i];
+                var aux = item[request.Property];
+
+                if (aux == null)
+                {
+                    continue;
+                }
+
+                if (aux.ToString() == request.Value)
+                {
+                    item[request.Property] = request.NewValue.ToString();
+                    arr[i] = item;
+                    affectedItems++;
+                }
+
+
+                Console.WriteLine(aux);
+            }
+
+            if (affectedItems == 0)
+            {
+                return affectedItems;
+            }
+
+            oldData[request.ArrayName] = arr;
+            node.Keys = oldData.ToString();
+
+            await WriteNode(node);
+            return affectedItems;
+
+        }
+
+        #endregion Update
+
+
+        #region Insert
+        public async Task Insert(string jsonData)
+        {
+
+            if (Root.ChildrenIds.Count < Degree)
+            {
+                var newNode = new SearchTreeNode(true, false, Degree);
+                newNode.Keys = jsonData;
+                await WriteNode(newNode);
+                Root.isLeaf = false;
+                Root.ChildrenIds.Add(newNode.Id);
+                await WriteNode(Root);
+                return;
+            }
+
+            string? id = await FindNonFullNode(Root.ChildrenIds);
+
+            if (id == null) return;
+            //TODO
+
+            var node = await ReadNode(id);
+
+            if (node.Keys == string.Empty)
+            {
+                node.Keys = jsonData;
+                await WriteNode(node);
+            }
+            else
+            {
+                var newNode = new SearchTreeNode(true, false, Degree);
+                newNode.Keys = jsonData;
+                await WriteNode(newNode);
+                node.isLeaf = false;
+                node.ChildrenIds.Add(newNode.Id);
+                await WriteNode(node);
+            }
+
+        }
 
 
         private async Task<string?> FindNonFullNode(List<string> nodes)
@@ -451,6 +439,38 @@ namespace db.Models
             return id;
         }
 
+        public async Task AddArray(RegisterCreateArrayRequest request)
+        {
+            var node = await ReadNode(request.RegisterId);
+
+            if (node == null)
+            {
+                throw new NotFoundException(what: "Register", identification: request.RegisterId);
+                //throw new NotFoundException($"Register '{request.RegisterId}' not exists");
+            }
+
+            var oldData = JsonConvert.DeserializeObject<JObject>(node.Keys);
+
+            if (!oldData.ContainsKey(request.ArrayName))
+            {
+                oldData.Add(request.ArrayName, new JArray());
+            }
+
+
+            JArray? extracted = oldData[request.ArrayName].ToObject<JArray>();
+            JToken? converted = JsonConvert.DeserializeObject<JToken>(request.Data.ToString() ?? "");
+            IEnumerable<JToken?> arr = extracted.Append(converted);
+
+
+            oldData[request.ArrayName] = JToken.FromObject(arr);
+            node.Keys = oldData.ToString();
+
+            await WriteNode(node);
+
+        }
+
+        #endregion Insert
 
     }
 }
+
