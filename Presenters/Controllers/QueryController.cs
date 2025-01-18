@@ -62,7 +62,7 @@ namespace db.Presenters.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByPropertyAND(string DatabaseName, QueryByPropertiesRequest request)
         {
-           
+
             try
             {
                 var res = await queryOperations.QueryByProperty(DatabaseName, request);
