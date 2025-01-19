@@ -15,9 +15,17 @@ const title2: SxProps<Theme> = {
     lineHeight: "2rem",
 }
 
+const subtitle1: SxProps<Theme> = {
+    fontSize: "16px",
+    fontWeight: 500,
+    color: colors.text[700],
+    lineHeight: "2rem",
+}
+
 const texts = {
     title1,
-    title2
+    title2,
+    subtitle1
 }
 
 export default texts;

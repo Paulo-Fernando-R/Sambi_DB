@@ -1,19 +1,12 @@
 import Drawer from "@mui/material/Drawer";
 import sideMenuStyles from "./sideMenuStyles";
-import { AddCircle, ExpandMore, StarBorder } from "@mui/icons-material";
+import { AddCircle } from "@mui/icons-material";
 import sambiIcon from "../../assets/sambi.svg";
 import { ImDatabase } from "react-icons/im";
-import {
-    Box,
-    Typography,
-    Button,
-    ListItemButton,
-    ListItemText,
-    Collapse,
-    List,
-    ListItemIcon,
-} from "@mui/material";
+import NestedList from "../nestedList/NestedList";
+import { Box, Typography, Button, List } from "@mui/material";
 import colors from "../../styles/colors";
+
 export default function SideMenu() {
     return (
         <Drawer sx={sideMenuStyles.dawer} variant="permanent" anchor="left">
@@ -40,27 +33,11 @@ export default function SideMenu() {
                     Databases
                 </Typography>
 
-                <List>
-                    <ListItemButton>
-                        <ListItemText primary="Database 1" />
-                        <ExpandMore />
-                    </ListItemButton>
-                    <Collapse in={true} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemIcon>
-                                    <StarBorder />
-                                </ListItemIcon>
-                                <ListItemText primary="Starred" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
+                <List sx={sideMenuStyles.list}>
+                    <NestedList />
+                    <NestedList />
                 </List>
             </Box>
         </Drawer>
     );
-}
-
-function NestedList() {
-    return <></>;
 }

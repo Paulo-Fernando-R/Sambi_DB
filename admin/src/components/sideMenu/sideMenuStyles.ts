@@ -13,7 +13,7 @@ const dawer: SxProps<Theme> = {
         boxSizing: "border-box",
         backgroundColor: colors.bg[200],
         borderColor: colors.stroke,
-        gap: "12px"
+        gap: "12px",
     },
 };
 
@@ -29,24 +29,28 @@ const logoBox: SxProps<Theme> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-start",
-    padding:"20px",
-    gap: "12px"
+    padding: "20px",
+    gap: "12px",
 };
 
 const logoImg: CSSProperties = {
     width: "56px",
     height: "56px",
     objectFit: "contain",
-}
-const title1 = texts.title1;
+};
+const title1: SxProps<Theme> = { 
+    ...texts.title1, 
+    fontSize: "clamp(16px, 3vh, 20px)",
+    lineHeight: "2rem",
+};
 
 const bodyBox: SxProps<Theme> = {
     padding: "20px",
-    gap: "28px",
+    // gap: "28px",
+    paddingTop: "28px",
     display: "flex",
     flexDirection: "column",
-    
-}
+};
 
 const button: SxProps<Theme> = {
     borderRadius: "12px",
@@ -54,15 +58,23 @@ const button: SxProps<Theme> = {
     color: colors.bg[100],
     border: "none",
     outline: "none",
-    stroke: "none"
-}
+    stroke: "none",
+};
 
 const subtitle: SxProps<Theme> = {
     ...texts.title2,
+    paddingTop: "28px",
     display: "flex",
     alignItems: "center",
-    gap: "10px"
-}
+    gap: "10px",
+};
+
+const list: SxProps<Theme> = {
+    padding: "0",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0px",
+};
 
 const sideMenuStyles = {
     dawer,
@@ -72,9 +84,8 @@ const sideMenuStyles = {
     title1,
     bodyBox,
     button,
-    subtitle
+    subtitle,
+    list,
 };
-
-
 
 export default sideMenuStyles;
