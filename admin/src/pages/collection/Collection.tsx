@@ -1,22 +1,17 @@
-
 import { Box, Typography } from "@mui/material";
+import collectionStyles from "./collectionStyles";
+import MainButton from "../../components/mainButton/MainButton";
+import { AddCircle } from "@mui/icons-material";
 
 export default function Collection() {
     return (
-        <Box
-            sx={{
-                padding: "20px",
-                paddingTop: "32px",
-                //backgroundColor: "red",
-                minHeight: "100dvh",
-                marginLeft: "clamp(100px, 25%, 380px)",
-            }}
-        >
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography variant="h1">Collection</Typography>
-                <Typography variant="h1">Filter</Typography>
+        <Box sx={collectionStyles.page}>
+            <Box sx={collectionStyles.titleBox}>
+                <Typography sx={collectionStyles.title} variant="h1">
+                    Wanderlei Database : Wrong idea collection
+                </Typography>
+                <MainButton text="ADD DATA" icon={<AddCircle sx={{ fontSize: "24px" }} />} />
             </Box>
-           
         </Box>
     );
 }
