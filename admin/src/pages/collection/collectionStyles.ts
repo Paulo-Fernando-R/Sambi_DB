@@ -25,9 +25,16 @@ const title: SxProps<Theme> = {
     color: colors.text[700],
 };
 
+const listBox: SxProps<Theme> = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+}
+
 const collectionStyles = {
     page,
     title,
     titleBox,
+    listBox
 };
 export default collectionStyles;
