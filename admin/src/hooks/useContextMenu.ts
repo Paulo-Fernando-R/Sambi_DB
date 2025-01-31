@@ -22,8 +22,13 @@ const useContextMenu = (constraint?: string) => {
         [x, y]
     );
 
-    const handleClose = useCallback(() => {
+    const handleClose = useCallback(async () => {
         if (visible) {
+            await new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve("");
+                }, 200);
+            });
             setVisible(false);
         }
     }, [visible]);

@@ -7,7 +7,7 @@ import { useState, useCallback } from "react";
 import useContextMenu from "../../hooks/useContextMenu";
 import ContextMenu from "../../contextMenu/ContextMenu";
 import ContextMenuItem from "../../contextMenu/ContextMenuItem";
-import { Delete, CheckBoxRounded } from "@mui/icons-material";
+import { Delete, CheckBoxRounded, Undo } from "@mui/icons-material";
 import colors from "../../styles/colors";
 
 export default function ListItem() {
@@ -56,6 +56,11 @@ export default function ListItem() {
                         <ContextMenuItem
                             text="Delete"
                             icon={<Delete sx={{ color: colors.warning }} />}
+                            onClick={() => console.log("Delete")}
+                        />,
+                        <ContextMenuItem
+                            text="Discard Changes"
+                            icon={<Undo sx={{ color: colors.text[700] }} />}
                             onClick={() => console.log("Delete")}
                         />,
                         <ContextMenuItem
