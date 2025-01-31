@@ -5,11 +5,15 @@ import { Box } from "@mui/material";
 import listItemStyles from "./listItemStyles";
 import { useState, useCallback } from "react";
 import useContextMenu from "../../hooks/useContextMenu";
+import ContextMenu from "../../contextMenu/ContextMenu";
+import ContextMenuItem from "../../contextMenu/ContextMenuItem";
+import { Delete, CheckBoxRounded } from "@mui/icons-material";
+import colors from "../../styles/colors";
 
 export default function ListItem() {
     const [_, setExtractedJson] = useState("");
     const [__, setError] = useState<Error | null>(null);
-    const context = useContextMenu();
+    const context = useContextMenu("list-item");
 
     const [entity, setEntity] = useState(
         jsonToEntity({
@@ -40,21 +44,26 @@ export default function ListItem() {
                 theme={listItemStyles.theme}
                 onChange={handleChange}
                 onExtract={handleExtract}
-                minWidth={200}
+                minWidth={1000}
                 maxHeight={500}
                 width="100%"
             />
 
             {context.visible && (
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: `${context.y}px`,
-                        left: `${context.x}px`,
-                        width: "100px",
-                        height: "100px",
-                        backgroundColor: "red",
-                    }}
+                <ContextMenu
+                    context={context}
+                    children={[
+                        <ContextMenuItem
+                            text="Delete"
+                            icon={<Delete sx={{ color: colors.warning }} />}
+                            onClick={() => console.log("Delete")}
+                        />,
+                        <ContextMenuItem
+                            text="Save Changes"
+                            icon={<CheckBoxRounded sx={{ color: colors.primary[800] }} />}
+                            onClick={() => console.log("Save")}
+                        />,
+                    ]}
                 />
             )}
         </Box>
