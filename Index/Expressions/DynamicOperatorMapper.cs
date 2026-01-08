@@ -48,7 +48,10 @@ namespace db.Index.Expressions
 
                 try
                 {
-                    return (string)x[condition.Key] == condition.Value;
+                    string res = (string)x[condition.Key];
+                    return res.ToLower() == condition.Value.ToLower();
+
+                    //return (string)x[condition.Key]. == condition.Value;
 
                 }
                 catch (Exception)
@@ -92,7 +95,10 @@ namespace db.Index.Expressions
 
                 try
                 {
-                    return (string)x[condition.Key] == condition.Value;
+                    string res = (string)x[condition.Key];
+                    return res.ToLower() != condition.Value.ToLower();
+
+                    //return (string)x[condition.Key] != condition.Value;
 
                 }
                 catch (Exception)
@@ -203,7 +209,7 @@ namespace db.Index.Expressions
                             continue;
                         }
 
-                        if (aux.ToString() == condition.Value)
+                        if (aux.ToString().ToLower() == condition.Value.ToLower())
                         {
                             found = true;
                             break;
