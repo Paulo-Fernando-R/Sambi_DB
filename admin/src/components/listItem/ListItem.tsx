@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 //@ts-expect-error no types
 import { InteractiveJsonEditor, jsonToEntity } from "interactive-json-editor";
-import { Box } from "@mui/material";
+import { Box, Skeleton, Typography } from "@mui/material";
 import listItemStyles from "./listItemStyles";
 import { useState, useCallback } from "react";
 import useContextMenu from "../../hooks/useContextMenu";
@@ -16,18 +16,6 @@ export default function ListItem({ data }: { data: QueryResponse }) {
     const [__, setError] = useState<Error | null>(null);
     const context = useContextMenu("list-item");
 
-    // const [entity, setEntity] = useState(
-    //     jsonToEntity({
-    //         name: "John Doe",
-    //         age: 30,
-    //         address: {
-    //             street: "123 Main St",
-    //             city: "Springfield",
-    //             state: "IL",
-    //         },
-    //         access: ["read", "write"],
-    //     })
-    // );
 
     const [entity, setEntity] = useState(jsonToEntity(data));
 
@@ -74,6 +62,26 @@ export default function ListItem({ data }: { data: QueryResponse }) {
                     ]}
                 />
             )}
+        </Box>
+    );
+}
+
+export function ListItemSkeleton() {
+    return (
+        <Box>
+            <Skeleton variant="text" sx={{ fontSize: '2rem' }} />
+            <Skeleton variant="text" sx={{ fontSize: '3rem' }} />
+            <Skeleton variant="rectangular" width={"100%"} height={"50vh"} />
+        </Box>
+    );
+}
+
+export function ListEmpty() {
+    return (
+        <Box>
+            <Typography color="text.secondary" variant="h6">No data found for this collection</Typography>
+            <Typography color="text.secondary" variant="body1">Try to add some data</Typography>
+
         </Box>
     );
 }

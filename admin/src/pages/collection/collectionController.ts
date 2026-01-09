@@ -21,7 +21,7 @@ export default class CollectionController {
         }
         catch (error) {
             console.log(error);
-            // throw error;
+            throw error;
         }
     }
 }   

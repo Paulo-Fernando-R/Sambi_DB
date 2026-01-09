@@ -1,9 +1,11 @@
+import CustomError from "../errors/customError";
 import OperatorsEnum from "../models/enums/operatorsEnum";
 import { QueryByPropertiesRequest } from "../models/requests/queryByPropertyRequest";
 import QueryResponse from "../models/responses/queryResponse";
 import { type IcustomAxios } from "../services/IcustomAxios";
+import IqueryRepository from "./IqueryRepository";
 
-export default class QueryRepository {
+export default class QueryRepository implements IqueryRepository {
     private axios: IcustomAxios;
     constructor(axios: IcustomAxios) {
         this.axios = axios;
@@ -23,12 +25,13 @@ export default class QueryRepository {
         try {
             const response = await this.axios.instance.post<QueryResponse[]>(`/Query/ByProperty/${request.databaseName}`, request);
 
-
+            if (response.status !== 200) {
+                throw new CustomError("Failed to fetch data", response.status, response.data.toString());
+            }
             return response.data;
         }
         catch (error) {
-            console.log(error);
-            // throw error;
+            throw new CustomError("Failed to fetch data", 500, error as string);
         }
     }
 
