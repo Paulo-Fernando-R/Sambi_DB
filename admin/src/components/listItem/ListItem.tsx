@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 //@ts-expect-error no types
 import { InteractiveJsonEditor, jsonToEntity } from "interactive-json-editor";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
 import listItemStyles from "./listItemStyles";
 import { useState, useCallback } from "react";
 import useContextMenu from "../../hooks/useContextMenu";
-import ContextMenu from "../../components/contextMenu/ContextMenu";
-import ContextMenuItem from "../../components/contextMenu/ContextMenuItem";
 import { Delete, CheckBoxRounded, Undo } from "@mui/icons-material";
 import colors from "../../styles/colors";
 import QueryResponse from "../../models/responses/queryResponse";
@@ -28,19 +26,35 @@ export default function ListItem({ data }: { data: QueryResponse }) {
         setEntity(newEntity);
     }, []);
 
+    const handleDiscard = useCallback(() => {
+        setEntity(jsonToEntity(data));
+    }, []);
+
     return (
-        <Box sx={listItemStyles.container} className="list-item">
+        <Paper elevation={3} sx={listItemStyles.container} className="list-item">
             <InteractiveJsonEditor
-                initialEntity={data}
+                initialEntity={entity}
                 theme={listItemStyles.theme}
                 onChange={handleChange}
                 onExtract={handleExtract}
-                minWidth={1000}
+                minWidth={200}
                 maxHeight={500}
                 width="100%"
             />
+            <Box sx={listItemStyles.buttonContainer}>
+                <Button onClick={handleDiscard} variant="contained" endIcon={<Delete sx={{ color: colors.bg[100] }} />}>
+                    Delete
+                </Button>
+                <Button onClick={handleDiscard} variant="contained" endIcon={<Undo sx={{ color: colors.bg[100] }} />}>
+                    Discard
+                </Button>
+                <Button onClick={handleDiscard} variant="contained" endIcon={<CheckBoxRounded sx={{ color: colors.bg[100] }} />}>
+                    Save
+                </Button>
 
-            {context.visible && (
+            </Box>
+
+            {/* {context.visible && (
                 <ContextMenu
                     context={context}
                     children={[
@@ -61,8 +75,8 @@ export default function ListItem({ data }: { data: QueryResponse }) {
                         />,
                     ]}
                 />
-            )}
-        </Box>
+            )} */}
+        </Paper>
     );
 }
 

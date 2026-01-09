@@ -3,12 +3,25 @@ import colors from "../../styles/colors";
 
 const container: SxProps<Theme> = {
     display: "flex",
-    flexDirection: "row",
+    flexDirection: "column",
     gap: "10px",
     borderRadius: "10px",
     height: "fit-content",
     overflow: "auto",
-   // position: "relative",
+    // position: "relative",
+    padding: "10px",
+};
+
+const buttonContainer: SxProps<Theme> = {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: "10px",
+    borderRadius: "10px",
+    height: "fit-content",
+    overflow: "auto",
+    padding: "10px",
+    // position: "relative",
 };
 
 const theme = {
@@ -28,5 +41,6 @@ const theme = {
 const listItemStyles = {
     container,
     theme,
+    buttonContainer,
 };
 export default listItemStyles;

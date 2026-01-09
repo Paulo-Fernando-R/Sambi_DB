@@ -1,4 +1,4 @@
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import collectionStyles from "./collectionStyles";
 import MainButton from "../../components/mainButton/MainButton";
 import { AddCircle } from "@mui/icons-material";
