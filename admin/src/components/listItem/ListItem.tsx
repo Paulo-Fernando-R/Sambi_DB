@@ -9,7 +9,12 @@ import { Delete, CheckBoxRounded, Undo } from "@mui/icons-material";
 import colors from "../../styles/colors";
 import QueryResponse from "../../models/responses/queryResponse";
 
-export default function ListItem({ data }: { data: QueryResponse }) {
+export type ListItemProps = {
+    data: QueryResponse;
+    deleteRegister: (registerId: string) => void;
+}
+
+export default function ListItem({ data, deleteRegister }: ListItemProps) {
     const [_, setExtractedJson] = useState("");
     const [__, setError] = useState<Error | null>(null);
     const context = useContextMenu("list-item");
@@ -30,6 +35,10 @@ export default function ListItem({ data }: { data: QueryResponse }) {
         setEntity(jsonToEntity(data));
     }, []);
 
+    const handleDelete = useCallback(() => {
+        deleteRegister(data.Id);
+    }, []);
+
     return (
         <Paper elevation={3} sx={listItemStyles.container} className="list-item">
             <InteractiveJsonEditor
@@ -42,7 +51,7 @@ export default function ListItem({ data }: { data: QueryResponse }) {
                 width="100%"
             />
             <Box sx={listItemStyles.buttonContainer}>
-                <Button onClick={handleDiscard} variant="contained" endIcon={<Delete sx={{ color: colors.bg[100] }} />}>
+                <Button onClick={handleDelete} variant="contained" endIcon={<Delete sx={{ color: colors.bg[100] }} />}>
                     Delete
                 </Button>
                 <Button onClick={handleDiscard} variant="contained" endIcon={<Undo sx={{ color: colors.bg[100] }} />}>
