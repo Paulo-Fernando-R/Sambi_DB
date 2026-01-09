@@ -35,7 +35,7 @@ export default function Collection() {
         <Box sx={collectionStyles.page}>
             <Box sx={collectionStyles.titleBox}>
                 <Typography sx={collectionStyles.title} variant="h1">
-                    Wanderlei Database : Wrong idea collection
+                    Database: {path[0]} {`>`} Collection: {path[1]}
                 </Typography>
                 <MainButton text="ADD DATA" icon={<AddCircle sx={{ fontSize: "24px" }} />} />
             </Box>
@@ -43,7 +43,7 @@ export default function Collection() {
 
             <Box sx={collectionStyles.listBox}>
                 {infiniteQuery.data?.pages.flat().map((item, index) => (
-                    <ListItem key={index} />
+                    <ListItem key={index} data={item!} />
                 ))}
             </Box>
         </Box>

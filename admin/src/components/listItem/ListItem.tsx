@@ -9,24 +9,27 @@ import ContextMenu from "../../components/contextMenu/ContextMenu";
 import ContextMenuItem from "../../components/contextMenu/ContextMenuItem";
 import { Delete, CheckBoxRounded, Undo } from "@mui/icons-material";
 import colors from "../../styles/colors";
+import QueryResponse from "../../models/responses/queryResponse";
 
-export default function ListItem() {
+export default function ListItem({ data }: { data: QueryResponse }) {
     const [_, setExtractedJson] = useState("");
     const [__, setError] = useState<Error | null>(null);
     const context = useContextMenu("list-item");
 
-    const [entity, setEntity] = useState(
-        jsonToEntity({
-            name: "John Doe",
-            age: 30,
-            address: {
-                street: "123 Main St",
-                city: "Springfield",
-                state: "IL",
-            },
-            access: ["read", "write"],
-        })
-    );
+    // const [entity, setEntity] = useState(
+    //     jsonToEntity({
+    //         name: "John Doe",
+    //         age: 30,
+    //         address: {
+    //             street: "123 Main St",
+    //             city: "Springfield",
+    //             state: "IL",
+    //         },
+    //         access: ["read", "write"],
+    //     })
+    // );
+
+    const [entity, setEntity] = useState(jsonToEntity(data));
 
     const handleExtract = useCallback((json: string, error: Error | null) => {
         setExtractedJson(json || "");
@@ -40,7 +43,7 @@ export default function ListItem() {
     return (
         <Box sx={listItemStyles.container} className="list-item">
             <InteractiveJsonEditor
-                initialEntity={entity}
+                initialEntity={data}
                 theme={listItemStyles.theme}
                 onChange={handleChange}
                 onExtract={handleExtract}
