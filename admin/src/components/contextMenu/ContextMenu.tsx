@@ -2,7 +2,7 @@ import React from "react";
 
 import Paper from "@mui/material/Paper";
 import MenuList from "@mui/material/MenuList";
-import { UseContextMenu } from "../hooks/useContextMenu";
+import { UseContextMenu } from "../../hooks/useContextMenu";
 
 type ContextMenuProps = {
     children: React.ReactNode[] | React.ReactNode;

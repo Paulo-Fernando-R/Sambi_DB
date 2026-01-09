@@ -5,8 +5,8 @@ import { Box } from "@mui/material";
 import listItemStyles from "./listItemStyles";
 import { useState, useCallback } from "react";
 import useContextMenu from "../../hooks/useContextMenu";
-import ContextMenu from "../../contextMenu/ContextMenu";
-import ContextMenuItem from "../../contextMenu/ContextMenuItem";
+import ContextMenu from "../../components/contextMenu/ContextMenu";
+import ContextMenuItem from "../../components/contextMenu/ContextMenuItem";
 import { Delete, CheckBoxRounded, Undo } from "@mui/icons-material";
 import colors from "../../styles/colors";
 
