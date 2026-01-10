@@ -1,5 +1,4 @@
 import CustomError from "../errors/customError";
-import QueryResponse from "../models/responses/queryResponse";
 import { type IcustomAxios } from "../services/IcustomAxios";
 import IregisterRepository from "./IregisterRepository";
 
