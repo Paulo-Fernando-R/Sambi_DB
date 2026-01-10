@@ -15,8 +15,13 @@ import { InteractiveJsonEditor, jsonToEntity } from "interactive-json-editor";
 import QuestionDialog from "../../../components/questionDialog/QuestionDialog";
 import { Fragment, useCallback, useState } from "react";
 
-export default function AddModal() {
-    const [open, setOpen] = React.useState(false);
+export type AddModalProps = {
+    open: boolean;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    saveRegister: (json: object) => void;
+};
+
+export default function AddModal({ open, setOpen, saveRegister }: AddModalProps) {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
     const [entity, setEntity] = useState(jsonToEntity({}));
@@ -42,25 +47,26 @@ export default function AddModal() {
         setOpen(false);
     };
 
+    const handleSave = useCallback(() => {
+        if (!finalJson) {
+            return;
+        }
+        saveRegister(JSON.parse(finalJson));
+        setUpdateOpen(false);
+        setOpen(false);
+    }, []);
+
     return (
         <Fragment>
-            <Button variant="outlined" onClick={handleClickOpen}>
-                Open responsive dialog
-            </Button>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="responsive-dialog-title"
             >
-                <DialogTitle id="responsive-dialog-title">
-                    {"Use Google's location service?"}
-                </DialogTitle>
+                <DialogTitle id="responsive-dialog-title">Add Register</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        Let Google help apps determine location. This means sending anonymous
-                        location data to Google, even when no apps are running.
-                    </DialogContentText>
+                    <DialogContentText>Add a new register to the collection</DialogContentText>
                 </DialogContent>
 
                 <Paper elevation={3} sx={listItemStyles.container} className="list-item">
@@ -79,8 +85,8 @@ export default function AddModal() {
                         setOpen={setUpdateOpen}
                         title=" Add Register"
                         description="Are you sure you want to add this register?"
-                        onConfirm={() => {}}
-                        onCancel={() => false}
+                        onConfirm={handleSave}
+                        onCancel={() => setUpdateOpen(false)}
                     />
                 </Paper>
 
