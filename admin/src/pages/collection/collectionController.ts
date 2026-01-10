@@ -15,12 +15,13 @@ export default class CollectionController {
         this.registerRepository = new RegisterRepository(this.axios);
     }
 
-    async list(databaseName: string, collectionName: string, page: number) {
+    async list(databaseName: string, collectionName: string, page: number, limit: number = 10) {
         try {
             const response = await this.queryRepository.list({
                 databaseName,
                 collectionName,
-                skip: page * 10
+                skip: page * limit,
+                limit
             })
             return response;
         }

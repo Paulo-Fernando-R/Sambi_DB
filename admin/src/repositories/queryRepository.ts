@@ -11,12 +11,12 @@ export default class QueryRepository implements IqueryRepository {
         this.axios = axios;
     }
 
-    async list(data: Pick<QueryByPropertiesRequest, "databaseName" | "collectionName" | "skip">) {
+    async list(data: Pick<QueryByPropertiesRequest, "databaseName" | "collectionName" | "skip" | "limit">) {
 
         const request: QueryByPropertiesRequest = {
             databaseName: data.databaseName,
             collectionName: data.collectionName,
-            limit: 10,
+            limit: data.limit,
             skip: data.skip,
             conditionsBehavior: OperatorsEnum.And,
             queryConditions: []

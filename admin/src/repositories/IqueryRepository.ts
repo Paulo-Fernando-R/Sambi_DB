@@ -2,5 +2,5 @@ import { QueryByPropertiesRequest } from "../models/requests/queryByPropertyRequ
 import QueryResponse from "../models/responses/queryResponse";
 
 export default interface IqueryRepository {
-    list(data: Pick<QueryByPropertiesRequest, "databaseName" | "collectionName" | "skip">): Promise<QueryResponse[]>
+    list(data: Pick<QueryByPropertiesRequest, "databaseName" | "collectionName" | "skip" | "limit">): Promise<QueryResponse[]>
 }

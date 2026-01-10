@@ -4,28 +4,30 @@ import MainButton from "../../components/mainButton/MainButton";
 import { AddCircle } from "@mui/icons-material";
 import ListItem, { ListEmpty, ListItemSkeleton } from "../../components/listItem/ListItem";
 import CollectionController from "./collectionController";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 export default function Collection() {
+    const PAGE_SIZE = 10;
     const controller = new CollectionController();
+    const queryClient = useQueryClient();
     const path = ["paulo", "jogos"];
     const [message, setMessage] = useState("");
+    const [page, setPage] = useState(1);
 
-    const infiniteQuery = useInfiniteQuery({
-        queryKey: [path.join("/")],
-        queryFn: () => controller.list(path[0], path[1], 0),
-        getNextPageParam: (lastPage, allPages) => {
-            return 0;
-        },
-        initialPageParam: 0,
+    const query = useQuery({
+        queryKey: [path.join("/"), page],
+        queryFn: () => controller.list(path[0], path[1], page - 1, PAGE_SIZE),
+        placeholderData: keepPreviousData,
     });
 
     const deleteMutation = useMutation({
         mutationFn: ({ registerId }: { registerId: string }) =>
             controller.delete(path[0], path[1], registerId),
         onSuccess: () => {
-            infiniteQuery.refetch();
+            queryClient.invalidateQueries({ queryKey: [path.join("/")] });
             setMessage("Register deleted successfully");
         },
         onError: () => {
@@ -37,7 +39,7 @@ export default function Collection() {
         mutationFn: ({ registerId, data }: { registerId: string; data: object }) =>
             controller.update(path[0], path[1], registerId, data),
         onSuccess: () => {
-            infiniteQuery.refetch();
+            queryClient.invalidateQueries({ queryKey: [path.join("/")] });
             setMessage("Register updated successfully");
         },
         onError: () => {
@@ -53,6 +55,10 @@ export default function Collection() {
         updateMutation.mutate({ registerId, data });
     };
 
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    };
+
     return (
         <Box sx={collectionStyles.page}>
             <Box sx={collectionStyles.titleBox}>
@@ -63,9 +69,9 @@ export default function Collection() {
             </Box>
 
             <Box sx={collectionStyles.listBox}>
-                {infiniteQuery.isFetching && <ListItemSkeleton />}
-                {infiniteQuery.data?.pages.flat().length === 0 && <ListEmpty />}
-                {infiniteQuery.data?.pages.flat().map((item, index) => (
+                {query.isPending && <ListItemSkeleton />}
+                {query.data?.length === 0 && <ListEmpty />}
+                {query.data?.map((item, index) => (
                     <ListItem
                         key={index}
                         data={item!}
@@ -99,6 +105,15 @@ export default function Collection() {
                     {message}
                 </Alert>
             </Snackbar>
+            <Stack spacing={2} alignSelf="center">
+                <Stack spacing={2} alignSelf="center">
+                    <Pagination
+                        count={query.data?.length === PAGE_SIZE ? page + 1 : page}
+                        page={page}
+                        onChange={handlePageChange}
+                    />
+                </Stack>
+            </Stack>
         </Box>
     );
 }
