@@ -39,4 +39,14 @@ export default class CollectionController {
             throw error;
         }
     }
+
+    async update(databaseName: string, collectionName: string, registerId: string, data: object) {
+        try {
+            await this.registerRepository.update(databaseName, collectionName, registerId, data);
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }   

@@ -5,10 +5,12 @@ import { AddCircle } from "@mui/icons-material";
 import ListItem, { ListEmpty, ListItemSkeleton } from "../../components/listItem/ListItem";
 import CollectionController from "./collectionController";
 import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 export default function Collection() {
     const controller = new CollectionController();
     const path = ["paulo", "jogos"];
+    const [message, setMessage] = useState("");
 
     const infiniteQuery = useInfiniteQuery({
         queryKey: [path.join("/")],
@@ -24,11 +26,31 @@ export default function Collection() {
             controller.delete(path[0], path[1], registerId),
         onSuccess: () => {
             infiniteQuery.refetch();
+            setMessage("Register deleted successfully");
+        },
+        onError: () => {
+            setMessage("Error deleting register");
+        },
+    });
+
+    const updateMutation = useMutation({
+        mutationFn: ({ registerId, data }: { registerId: string; data: object }) =>
+            controller.update(path[0], path[1], registerId, data),
+        onSuccess: () => {
+            infiniteQuery.refetch();
+            setMessage("Register updated successfully");
+        },
+        onError: () => {
+            setMessage("Error updating register");
         },
     });
 
     const deleteRegister = async (registerId: string) => {
         deleteMutation.mutate({ registerId });
+    };
+
+    const updateRegister = async (registerId: string, data: object) => {
+        updateMutation.mutate({ registerId, data });
     };
 
     return (
@@ -44,7 +66,12 @@ export default function Collection() {
                 {infiniteQuery.isFetching && <ListItemSkeleton />}
                 {infiniteQuery.data?.pages.flat().length === 0 && <ListEmpty />}
                 {infiniteQuery.data?.pages.flat().map((item, index) => (
-                    <ListItem key={index} data={item!} deleteRegister={deleteRegister} />
+                    <ListItem
+                        key={index}
+                        data={item!}
+                        deleteRegister={deleteRegister}
+                        updateRegister={updateRegister}
+                    />
                 ))}
             </Box>
 
@@ -55,15 +82,21 @@ export default function Collection() {
                 <CircularProgress color="inherit" />
             </Backdrop>
 
-            <Snackbar open={deleteMutation.isSuccess} autoHideDuration={6000}>
+            <Snackbar
+                open={deleteMutation.isSuccess || updateMutation.isSuccess}
+                autoHideDuration={6000}
+            >
                 <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
-                    Register deleted successfully
+                    {message}
                 </Alert>
             </Snackbar>
 
-            <Snackbar open={deleteMutation.isError} autoHideDuration={6000}>
+            <Snackbar
+                open={deleteMutation.isError || updateMutation.isError}
+                autoHideDuration={6000}
+            >
                 <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
-                    Error deleting register
+                    {message}
                 </Alert>
             </Snackbar>
         </Box>

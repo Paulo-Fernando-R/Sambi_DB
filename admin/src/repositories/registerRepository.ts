@@ -31,5 +31,26 @@ export default class RegisterRepository implements IregisterRepository {
         }
     }
 
+    async update(databaseName: string, collectionName: string, registerId: string, data: object): Promise<void> {
+
+        const request = {
+            collectionName: collectionName,
+            registerId: registerId,
+            data: data
+        }
+
+        try {
+            const response = await this.axios.instance(`/Register/Update/${databaseName}`, { method: "PUT", data: request });
+
+            if (response.status !== 200) {
+                throw new CustomError("Failed to fetch data", response.status, response.data.toString());
+            }
+
+        }
+        catch (error) {
+            throw new CustomError("Failed to fetch data", 500, error as string);
+        }
+    }
+
 
 }   

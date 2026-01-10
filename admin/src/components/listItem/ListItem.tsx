@@ -12,16 +12,20 @@ import QuestionDialog from "../questionDialog/QuestionDialog";
 export type ListItemProps = {
     data: QueryResponse;
     deleteRegister: (registerId: string) => void;
+    updateRegister: (registerId: string, data: object) => void;
 };
 
-export default function ListItem({ data, deleteRegister }: ListItemProps) {
-    const [_, setExtractedJson] = useState("");
-    const [__, setError] = useState<Error | null>(null);
+export default function ListItem({ data, deleteRegister, updateRegister }: ListItemProps) {
+    const [__, setExtractedJson] = useState("");
+    let finalJson = "";
+    const [_, setError] = useState<Error | null>(null);
     const [open, setOpen] = useState(false);
+    const [updateOpen, setUpdateOpen] = useState(false);
     const [entity, setEntity] = useState(jsonToEntity(data));
 
     const handleExtract = useCallback((json: string, error: Error | null) => {
         setExtractedJson(json || "");
+        finalJson = json || "";
         setError(error);
     }, []);
 
@@ -35,6 +39,15 @@ export default function ListItem({ data, deleteRegister }: ListItemProps) {
 
     const handleDelete = useCallback(() => {
         deleteRegister(data.Id);
+    }, []);
+
+    const handleUpdate = useCallback(() => {
+        console.log(finalJson);
+        if (!finalJson) {
+            setError(null);
+            return;
+        }
+        updateRegister(data.Id, JSON.parse(finalJson).Data);
     }, []);
 
     return (
@@ -64,7 +77,7 @@ export default function ListItem({ data, deleteRegister }: ListItemProps) {
                     Discard
                 </Button>
                 <Button
-                    onClick={handleDiscard}
+                    onClick={() => setUpdateOpen(true)}
                     variant="contained"
                     endIcon={<CheckBoxRounded sx={{ color: colors.bg[100] }} />}
                 >
@@ -79,6 +92,15 @@ export default function ListItem({ data, deleteRegister }: ListItemProps) {
                 description="Are you sure you want to delete this register?"
                 onConfirm={handleDelete}
                 onCancel={() => setOpen(false)}
+            />
+
+            <QuestionDialog
+                open={updateOpen}
+                setOpen={setUpdateOpen}
+                title="Update Register"
+                description="Are you sure you want to update this register?"
+                onConfirm={handleUpdate}
+                onCancel={() => setUpdateOpen(false)}
             />
         </Paper>
     );
