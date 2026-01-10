@@ -19,7 +19,8 @@ export function useCollection(databaseName: string, collectionName: string) {
         mutationFn: ({ registerId }: { registerId: string }) =>
             controller.delete(databaseName, collectionName, registerId),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [`${databaseName}/${collectionName}`] });
+            //  queryClient.invalidateQueries({ queryKey: [`${databaseName}/${collectionName}`] });
+            query.refetch();
             setMessage("Register deleted successfully");
         },
         onError: () => {
@@ -31,11 +32,25 @@ export function useCollection(databaseName: string, collectionName: string) {
         mutationFn: ({ registerId, data }: { registerId: string; data: object }) =>
             controller.update(databaseName, collectionName, registerId, data),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [`${databaseName}/${collectionName}`] });
+            //  queryClient.invalidateQueries({ queryKey: [`${databaseName}/${collectionName}`] });
+            query.refetch();
             setMessage("Register updated successfully");
         },
         onError: () => {
             setMessage("Error updating register");
+        },
+    });
+
+    const insertMutation = useMutation({
+        mutationFn: ({ data }: { data: object }) =>
+            controller.insert(databaseName, collectionName, data),
+        onSuccess: () => {
+            //  queryClient.invalidateQueries({ queryKey: [`${databaseName}/${collectionName}`] });
+            query.refetch();
+            setMessage("Register inserted successfully");
+        },
+        onError: () => {
+            setMessage("Error inserting register");
         },
     });
 
@@ -51,15 +66,21 @@ export function useCollection(databaseName: string, collectionName: string) {
         setPage(value);
     };
 
+    const insertRegister = async (data: object) => {
+        insertMutation.mutate({ data });
+    };
+
     return {
         query,
         deleteMutation,
         updateMutation,
+        insertMutation,
         page,
         message,
         PAGE_SIZE,
         deleteRegister,
         updateRegister,
+        insertRegister,
         handlePageChange
     };
 }

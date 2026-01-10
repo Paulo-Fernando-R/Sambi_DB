@@ -11,17 +11,23 @@ export default function Collection() {
         query,
         deleteMutation,
         updateMutation,
+        insertMutation,
         page,
         message,
         PAGE_SIZE,
         deleteRegister,
         updateRegister,
+        insertRegister,
         handlePageChange,
     } = useCollection(path[0], path[1]);
 
     return (
         <Box sx={collectionStyles.page}>
-            <CollectionHeader databaseName={path[0]} collectionName={path[1]} />
+            <CollectionHeader
+                databaseName={path[0]}
+                collectionName={path[1]}
+                insertRegister={insertRegister}
+            />
 
             <CollectionList
                 data={query.data}
@@ -38,7 +44,9 @@ export default function Collection() {
             </Backdrop>
 
             <Snackbar
-                open={deleteMutation.isSuccess || updateMutation.isSuccess}
+                open={
+                    deleteMutation.isSuccess || updateMutation.isSuccess || insertMutation.isSuccess
+                }
                 autoHideDuration={6000}
             >
                 <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
@@ -47,7 +55,7 @@ export default function Collection() {
             </Snackbar>
 
             <Snackbar
-                open={deleteMutation.isError || updateMutation.isError}
+                open={deleteMutation.isError || updateMutation.isError || insertMutation.isError}
                 autoHideDuration={6000}
             >
                 <Alert severity="error" variant="filled" sx={{ width: "100%" }}>

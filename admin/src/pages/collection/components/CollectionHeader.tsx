@@ -8,9 +8,14 @@ import { useState } from "react";
 interface CollectionHeaderProps {
     databaseName: string;
     collectionName: string;
+    insertRegister: (data: object) => Promise<void>;
 }
 
-export default function CollectionHeader({ databaseName, collectionName }: CollectionHeaderProps) {
+export default function CollectionHeader({
+    databaseName,
+    collectionName,
+    insertRegister,
+}: CollectionHeaderProps) {
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
@@ -18,7 +23,7 @@ export default function CollectionHeader({ databaseName, collectionName }: Colle
     };
 
     const saveRegister = (register: object) => {
-        console.log(register);
+        insertRegister(register);
     };
     return (
         <Box sx={collectionStyles.titleBox}>

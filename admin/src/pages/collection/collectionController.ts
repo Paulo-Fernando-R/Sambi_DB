@@ -50,4 +50,14 @@ export default class CollectionController {
             throw error;
         }
     }
+
+    async insert(databaseName: string, collectionName: string, data: object) {
+        try {
+            await this.registerRepository.insert(databaseName, collectionName, data);
+        }
+        catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
 }   
