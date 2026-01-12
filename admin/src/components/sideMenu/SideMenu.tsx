@@ -8,9 +8,16 @@ import { Box, Typography, Button, List } from "@mui/material";
 import colors from "../../styles/colors";
 import FormDialog from "../formDialog/FormDialog";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export default function SideMenu() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  function navigateToDatabases() {
+    navigate("/databases");
+  }
+
   return (
     <Drawer sx={sideMenuStyles.dawer} variant="permanent" anchor="left">
       <Box sx={sideMenuStyles.headerBox}>
@@ -32,7 +39,11 @@ export default function SideMenu() {
           New Database
         </Button>
 
-        <Typography sx={sideMenuStyles.subtitle} variant="h1">
+        <Typography
+          sx={sideMenuStyles.subtitle}
+          variant="h1"
+          onClick={navigateToDatabases}
+        >
           <ImDatabase color={colors.text[800]} />
           Databases
         </Typography>
