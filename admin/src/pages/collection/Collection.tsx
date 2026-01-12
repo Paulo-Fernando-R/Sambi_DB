@@ -21,6 +21,12 @@ export default function Collection() {
         handlePageChange,
     } = useCollection(path[0], path[1]);
 
+    const handleClose = () => {
+        deleteMutation.reset();
+        updateMutation.reset();
+        insertMutation.reset();
+    };
+
     return (
         <Box sx={collectionStyles.page}>
             <CollectionHeader
@@ -48,6 +54,7 @@ export default function Collection() {
                     deleteMutation.isSuccess || updateMutation.isSuccess || insertMutation.isSuccess
                 }
                 autoHideDuration={6000}
+                onClose={handleClose}
             >
                 <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
                     {message}
@@ -57,6 +64,7 @@ export default function Collection() {
             <Snackbar
                 open={deleteMutation.isError || updateMutation.isError || insertMutation.isError}
                 autoHideDuration={6000}
+                onClose={handleClose}
             >
                 <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
                     {message}
