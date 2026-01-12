@@ -38,7 +38,7 @@ export default function Collection() {
 
             <Backdrop
                 sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-                open={deleteMutation.isPending}
+                open={deleteMutation.isPending || updateMutation.isPending || insertMutation.isPending}
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
