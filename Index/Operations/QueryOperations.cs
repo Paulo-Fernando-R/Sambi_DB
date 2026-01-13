@@ -58,6 +58,12 @@ namespace db.Index.Operations
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
+            
+            if (!File.Exists(collection + ".zip"))
+            {
+                throw new DirectoryNotExistsException(what: "Collection", identification: request.CollectionName);
+            }
+
             var sTree = new SearchTree(collection);
 
             var res = await sTree.SearchByProperty(request.ConditionsBehavior!, request.QueryConditions, (int)request.Skip!, (int)request.Limit!);
