@@ -1,4 +1,5 @@
-﻿using db.Index.Exceptions;
+﻿using db.Index.Enums;
+using db.Index.Exceptions;
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +66,21 @@ namespace db.Presenters.Controllers
 
             try
             {
+                if (request.Skip == null)
+                {
+                    request.Skip = 0;
+                }
+
+                if(request.Limit == null)
+                {
+                    request.Limit = 20;
+                }
+
+                if(request.ConditionsBehavior == null)
+                {
+                    request.ConditionsBehavior = OperatorsEnum.And.ToDescriptionString();
+                }
+
                 var res = await queryOperations.QueryByProperty(DatabaseName, request);
 
                 return Content(JsonConvert.SerializeObject(res), "application/json");

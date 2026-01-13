@@ -54,13 +54,13 @@ namespace db.Index.Operations
             if (!Directory.Exists(path))
             {
                 throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
-               // throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
+                // throw new DirectoryNotExistsException($"Database '{databaseName}' not exists");
             }
 
             string collection = Path.Combine(currentDir, parentFolderName, databaseName, request.CollectionName);
             var sTree = new SearchTree(collection);
 
-            var res = await sTree.SearchByProperty(request.ConditionsBehavior, request.QueryConditions);
+            var res = await sTree.SearchByProperty(request.ConditionsBehavior!, request.QueryConditions, (int)request.Skip!, (int)request.Limit!);
             var list = new List<QueryByPropertyResponse>();
 
             foreach (var item in res)

@@ -82,10 +82,12 @@ namespace db.Models
             }
         }
 
-        public async Task<List<SearchTreeNode>> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions)
+        public async Task<List<SearchTreeNode>> SearchByProperty(string operatorType, List<QueryByPropertiesConditions> conditions, int skip, int limit)
         {
             var nodes = await ReadNodes(1);
             var list = new List<SearchTreeNode>();
+            int skipCount = 0;
+            int limitCount = 0;
 
             if (nodes == null)
             {
@@ -94,14 +96,67 @@ namespace db.Models
 
             list = nodes.Where(x =>
             {
+
                 var item = new JObject(x.DynamicKeys());
-                return DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
+                bool res = DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
+      
+                bool skipRes = Skip(res, skip, skipCount);
+
+                if (!skipRes)
+                {
+                    skipCount++;
+                    return skipRes;
+                }
+
+                bool limitRes = Limit(res, limit, limitCount);
+
+                if (!limitRes)
+                {
+                    return limitRes;
+                }
+
+                limitCount++;
+                return limitRes;
 
             }).ToList();
 
             return list;
 
         }
+
+        //Return true if ended skip count
+        private bool Skip(bool response, int skip, int skipCount)
+        {
+            if (!response)
+            {
+                return false;
+            }
+
+            if (skipCount < skip)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        //Return true if not ended limit count
+        private bool Limit(bool response, int limit, int limitCount)
+        {
+            if (!response)
+            {
+                return false;
+            }
+
+            if (limit > limitCount)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
 
         #endregion Search
 
