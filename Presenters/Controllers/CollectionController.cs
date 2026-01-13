@@ -2,6 +2,7 @@
 using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace db.Presenters.Controllers
 {
@@ -105,6 +106,28 @@ namespace db.Presenters.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("[controller]/List/{DatabaseName}")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> List(string DatabaseName)
+        {
+            try
+            {
+                var res = collectionOperations.CollectionList(DatabaseName);
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (DirectoryNotExistsException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+
         }
     }
 }

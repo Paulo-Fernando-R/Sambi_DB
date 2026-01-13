@@ -98,5 +98,33 @@ namespace db.Index.Operations
             File.Move(collection, newCollection);
 
         }
+
+        public IEnumerable<string> CollectionList(string databaseName)
+        {
+            string folderPath = Path.Combine(currentDir, parentFolderName, databaseName);
+
+            if (!Directory.Exists(folderPath))
+            {
+                throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
+            }
+
+            string[] dir = Directory.GetFiles(folderPath);
+
+            if (dir.Length < 1)
+            {
+                throw new NotFoundException(what: "Collection", identification: "No collections found");
+            }
+
+            List<string> res = [];
+
+            foreach (string item in dir)
+            {
+                string aux = item.Substring(item.LastIndexOf("\\") + 1);
+                aux = aux.Substring(0, aux.LastIndexOf("."));
+                res.Add(aux);
+            }
+
+            return res;
+        }
     }
 }
