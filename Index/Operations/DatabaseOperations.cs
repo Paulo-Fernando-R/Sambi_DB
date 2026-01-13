@@ -39,7 +39,34 @@ namespace db.Index.Operations
                 return;
             }
             throw new DirectoryNotExistsException(what: "Database", identification: databaseName);
-           // throw new DirectoryNotExistsException($"Database '{databaseName}' does not exist");
+            // throw new DirectoryNotExistsException($"Database '{databaseName}' does not exist");
+        }
+
+        public IEnumerable<string> DatabaseList()
+        {
+            string folderPath = Path.Combine(currentDir, parentFolderName);
+
+            if (!Directory.Exists(folderPath))
+            {
+                throw new DirectoryNotExistsException(what: "Directory", identification: "Root databases directory");
+            }
+
+            string[] dir = Directory.GetDirectories(folderPath);
+
+            if(dir.Length < 1)
+            {
+                throw new NotFoundException(what: "Directory", identification: "No databases found");
+            }
+
+            List<string> res = [];
+
+            foreach (string item in dir)
+            {
+                string aux = item.Substring(item.LastIndexOf("\\")+1);
+                res.Add(aux);
+            }
+          
+            return res;
         }
     }
 }

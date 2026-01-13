@@ -3,6 +3,7 @@ using db.Index.Operations;
 using db.Presenters.Requests;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace db.Presenters.Controllers
 {
@@ -56,6 +57,28 @@ namespace db.Presenters.Controllers
             }
 
 
+        }
+
+        [HttpGet]
+        [Route("[controller]/List")]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> List()
+        {
+            try
+            {
+                var res = databaseOperations.DatabaseList();
+                return Content(JsonConvert.SerializeObject(res), "application/json");
+            }
+            catch (DirectoryNotExistsException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (NotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+           
         }
 
         [HttpGet]
