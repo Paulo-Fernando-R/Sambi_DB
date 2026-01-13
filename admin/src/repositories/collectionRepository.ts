@@ -16,11 +16,7 @@ export default class CollectionRepository implements IcollectionRepository {
       );
 
       if (response.status === 404) {
-        throw new CustomError(
-          "No collections found",
-          response.status,
-          response.data.toString()
-        );
+        return [];
       }
 
       if (response.status !== 200) {

@@ -18,6 +18,8 @@ export type FormDialogProps = {
   onCancel: () => void;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export default function FormDialog({
@@ -31,6 +33,8 @@ export default function FormDialog({
   title,
   open,
   setOpen,
+  value,
+  setValue,
 }: FormDialogProps) {
   const handleClose = () => {
     setOpen(false);
@@ -72,12 +76,18 @@ export default function FormDialog({
               type={type}
               fullWidth
               variant="standard"
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
             />
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText}</Button>
-          <Button type="submit" form="subscription-form">
+          <Button onClick={handleCancel}>{cancelText}</Button>
+          <Button
+            onClick={handleConfirm}
+            type="submit"
+            form="subscription-form"
+          >
             {confirmText}
           </Button>
         </DialogActions>

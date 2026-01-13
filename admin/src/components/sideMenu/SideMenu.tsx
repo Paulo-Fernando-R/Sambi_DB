@@ -4,17 +4,28 @@ import { AddCircle } from "@mui/icons-material";
 import sambiIcon from "../../assets/sambi.svg";
 import { ImDatabase } from "react-icons/im";
 import NestedList from "../nestedList/NestedList";
-import { Box, Typography, Button, List } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  List,
+  Backdrop,
+  CircularProgress,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import colors from "../../styles/colors";
 import FormDialog from "../formDialog/FormDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import SideMenuController from "./sideMenuController";
 
 export default function SideMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [newDatabaseName, setNewDatabaseName] = useState("");
+  const [message, setMessage] = useState("");
 
   const sideMenuController = new SideMenuController();
 
@@ -23,12 +34,29 @@ export default function SideMenu() {
     queryFn: () => sideMenuController.getDatabasesResponse(),
   });
 
+  const mutation = useMutation({
+    mutationFn: () => sideMenuController.createDatabase(newDatabaseName),
+    onSuccess: () => {
+      setOpen(false);
+      setMessage("Database created successfully");
+      query.refetch();
+    },
+    onError: () => {
+      setOpen(false);
+      setMessage("Database creation failed");
+    },
+  });
+
   function navigateToDatabases() {
     navigate("/databases");
   }
 
-  if (query.data) {
-    console.log(query.data);
+  function handleCreateDatabase() {
+    mutation.mutate();
+  }
+
+  function handleClose() {
+    mutation.reset();
   }
 
   return (
@@ -74,11 +102,40 @@ export default function SideMenu() {
         setOpen={setOpen}
         title="New Database"
         description="Enter database name"
-        onConfirm={() => setOpen(false)}
+        onConfirm={handleCreateDatabase}
         onCancel={() => setOpen(false)}
         placeholder="Database name"
         type="text"
+        value={newDatabaseName}
+        setValue={setNewDatabaseName}
       />
+
+      <Backdrop
+        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+        open={mutation.isPending || query.isFetching}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <Snackbar
+        open={mutation.isSuccess}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={mutation.isError}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
     </Drawer>
   );
 }

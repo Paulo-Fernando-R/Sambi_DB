@@ -31,9 +31,18 @@ export default class SideMenuController {
 
     for await (const database of databases) {
       const collections = await this.getCollections(database);
-      databasesResponse.push({ databaseName: database, collections });
+      databasesResponse.push({
+        databaseName: database,
+        collections: collections.sort((a, b) => a.localeCompare(b)),
+      });
     }
 
-    return databasesResponse;
+    return databasesResponse.sort((a, b) =>
+      a.databaseName.localeCompare(b.databaseName)
+    );
+  }
+
+  async createDatabase(databaseName: string) {
+    return await this.databaseRepository.createDatabase(databaseName);
   }
 }
