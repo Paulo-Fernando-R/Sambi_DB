@@ -9,13 +9,26 @@ import colors from "../../styles/colors";
 import FormDialog from "../formDialog/FormDialog";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import SideMenuController from "./sideMenuController";
 
 export default function SideMenu() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  const sideMenuController = new SideMenuController();
+
+  const query = useQuery({
+    queryKey: ["databases"],
+    queryFn: () => sideMenuController.getDatabasesResponse(),
+  });
+
   function navigateToDatabases() {
     navigate("/databases");
+  }
+
+  if (query.data) {
+    console.log(query.data);
   }
 
   return (
@@ -28,6 +41,7 @@ export default function SideMenu() {
           </Typography>
         </Box>
       </Box>
+
       <Box sx={sideMenuStyles.bodyBox}>
         <Button
           sx={sideMenuStyles.button}
@@ -49,10 +63,12 @@ export default function SideMenu() {
         </Typography>
 
         <List sx={sideMenuStyles.list}>
-          <NestedList />
-          <NestedList />
+          {query.data?.map((database) => (
+            <NestedList key={database.databaseName} data={database} />
+          ))}
         </List>
       </Box>
+
       <FormDialog
         open={open}
         setOpen={setOpen}
