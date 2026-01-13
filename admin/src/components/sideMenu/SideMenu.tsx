@@ -16,48 +16,21 @@ import {
 } from "@mui/material";
 import colors from "../../styles/colors";
 import FormDialog from "../formDialog/FormDialog";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import SideMenuController from "./sideMenuController";
+import { useSideMenu } from "./useSideMenu";
 
 export default function SideMenu() {
-  const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
-  const [newDatabaseName, setNewDatabaseName] = useState("");
-  const [message, setMessage] = useState("");
-
-  const sideMenuController = new SideMenuController();
-
-  const query = useQuery({
-    queryKey: ["databases"],
-    queryFn: () => sideMenuController.getDatabasesResponse(),
-  });
-
-  const mutation = useMutation({
-    mutationFn: () => sideMenuController.createDatabase(newDatabaseName),
-    onSuccess: () => {
-      setOpen(false);
-      setMessage("Database created successfully");
-      query.refetch();
-    },
-    onError: () => {
-      setOpen(false);
-      setMessage("Database creation failed");
-    },
-  });
-
-  function navigateToDatabases() {
-    navigate("/databases");
-  }
-
-  function handleCreateDatabase() {
-    mutation.mutate();
-  }
-
-  function handleClose() {
-    mutation.reset();
-  }
+  const {
+    open,
+    setOpen,
+    newDatabaseName,
+    setNewDatabaseName,
+    message,
+    query,
+    mutation,
+    navigateToDatabases,
+    handleCreateDatabase,
+    handleClose,
+  } = useSideMenu();
 
   return (
     <Drawer sx={sideMenuStyles.dawer} variant="permanent" anchor="left">
