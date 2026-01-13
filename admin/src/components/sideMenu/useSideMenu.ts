@@ -30,7 +30,7 @@ export function useSideMenu() {
   });
 
   function navigateToDatabases() {
-    navigate("/databases");
+    navigate("/");
   }
 
   function handleCreateDatabase() {

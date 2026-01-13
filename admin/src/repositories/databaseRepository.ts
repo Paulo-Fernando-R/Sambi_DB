@@ -61,4 +61,28 @@ export default class DatabaseRepository implements IdatabaseRepository {
       throw new CustomError("Failed to create database", 500, error as string);
     }
   }
+
+  async dropDatabase(databaseName: string) {
+    try {
+      const response = await this.axios.instance.delete<string>(
+        `/Database/Delete/${databaseName}`,
+        {
+          data: { confirm: true },
+        }
+      );
+
+      if (response.status !== 200) {
+        throw new CustomError(
+          "Failed to drop database",
+          response.status,
+          response.data.toString()
+        );
+      }
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw new CustomError("Failed to drop database", 500, error as string);
+    }
+  }
 }
