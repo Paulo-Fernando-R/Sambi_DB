@@ -1,8 +1,13 @@
 using db.Index.Operations;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Windows Service support
+builder.Host.UseWindowsService();
 
 string currentDir = AppDomain.CurrentDomain.BaseDirectory;
 string folderName = builder.Configuration.GetSection("Databases").GetValue<string>("FolderName");
@@ -56,7 +61,7 @@ app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
