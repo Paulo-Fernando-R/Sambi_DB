@@ -11,6 +11,7 @@ export default class DatabaseRepository implements IdatabaseRepository {
 
   async getDatabases() {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.get<string[]>(
         "/Database/List"
       );
@@ -42,6 +43,7 @@ export default class DatabaseRepository implements IdatabaseRepository {
 
   async createDatabase(databaseName: string) {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.post<string>(
         "/Database/Create",
         { databaseName }
@@ -64,6 +66,7 @@ export default class DatabaseRepository implements IdatabaseRepository {
 
   async dropDatabase(databaseName: string) {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.delete<string>(
         `/Database/Delete/${databaseName}`,
         {

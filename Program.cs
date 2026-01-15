@@ -1,7 +1,4 @@
 using db.Index.Operations;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add Windows Service support
 builder.Host.UseWindowsService();
 
+// Initialize folder paths
 string currentDir = AppDomain.CurrentDomain.BaseDirectory;
 string folderName = builder.Configuration.GetSection("Databases").GetValue<string>("FolderName");
 string folderPath = Path.Combine(currentDir, folderName);
-
 string adminDir = builder.Configuration.GetSection("Admin").GetValue<string>("Directory");
 
 
@@ -41,6 +38,7 @@ builder.Services.AddTransient<QueryOperations>();
 builder.Services.AddTransient<CollectionOperations>();
 builder.Services.AddTransient<RegisterOperations>();
 
+// Ensure the database folder exists
 if (!Directory.Exists(folderPath))
 {
     Directory.CreateDirectory(folderPath);
@@ -72,6 +70,6 @@ app.MapControllers();
 //Standalone build = dotnet publish -c Release -r win-x64 --self-contained
 //dotnet publish -c Release -r win-x64 --self - contained true /p:PublishSingleFile = true
 
-
-app.Run("http://localhost:5000");
+string port = builder.Configuration.GetSection("Config").GetValue<string>("Port");
+app.Run($"http://localhost:{port}");
 //app.Run();

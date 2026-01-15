@@ -27,6 +27,7 @@ export default class QueryRepository implements IqueryRepository {
     };
 
     try {
+      await this.axios.init();
       const response = await this.axios.instance.post<QueryResponse[]>(
         `/Query/ByProperty/${request.databaseName}`,
         request

@@ -18,6 +18,7 @@ export default class RegisterRepository implements IregisterRepository {
         }
 
         try {
+            await this.axios.init();
             const response = await this.axios.instance(`/Register/Delete/${databaseName}`, { method: "DELETE", data: request });
 
             if (response.status !== 200) {
@@ -39,6 +40,7 @@ export default class RegisterRepository implements IregisterRepository {
         }
 
         try {
+            await this.axios.init();
             const response = await this.axios.instance(`/Register/Update/${databaseName}`, { method: "PUT", data: request });
 
             if (response.status !== 200) {
@@ -59,6 +61,7 @@ export default class RegisterRepository implements IregisterRepository {
         }
 
         try {
+            await this.axios.init();
             const response = await this.axios.instance(`/Register/Create/${databaseName}`, { method: "POST", data: request });
 
             if (response.status !== 200) {

@@ -4,10 +4,19 @@ import { IcustomAxios } from "./IcustomAxios";
 
 
 export default class CustomAxios implements IcustomAxios {
-    instance: AxiosInstance;
-    private readonly baseURL: string = "http://localhost:5000"; //import.meta.env.VITE_PUBLIC_API_URL;
+    instance!: AxiosInstance;
+    private baseURL!: string;
+    private readonly configPath: string = "/config.json";
 
     constructor() {
+
+    }
+
+    async init() {
+        const res = await fetch(this.configPath);
+        const data = await res.json();
+        this.baseURL = `${data.dbUrl}:${data.dbPort}`;
+
         this.instance = axios.create({
             baseURL: this.baseURL,
             timeout: 10000, // 10 seconds timeout

@@ -11,6 +11,7 @@ export default class CollectionRepository implements IcollectionRepository {
 
   async getCollections(databaseName: string) {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.get<string[]>(
         `/Collection/List/${databaseName}`
       );
@@ -38,6 +39,7 @@ export default class CollectionRepository implements IcollectionRepository {
 
   async createCollection(databaseName: string, collectionName: string) {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.post<string>(
         `/Collection/Create/${databaseName}`,
         { collectionName }
@@ -64,6 +66,7 @@ export default class CollectionRepository implements IcollectionRepository {
 
   async dropCollection(databaseName: string, collectionName: string) {
     try {
+      await this.axios.init();
       const response = await this.axios.instance.delete<string>(
         `/Collection/Delete/${databaseName}`,
         {
