@@ -70,6 +70,8 @@ app.MapFallbackToFile("index.html");
 app.MapControllers();
 
 //Standalone build = dotnet publish -c Release -r win-x64 --self-contained
+//dotnet publish -c Release -r win-x64 --self - contained true /p:PublishSingleFile = true
+
 
 app.Run("http://localhost:5000");
 //app.Run();
