@@ -19,6 +19,7 @@ import databaseStyles from "../databaseStyles";
 import colors from "../../../styles/colors";
 import DatabaseResponse from "../../../models/responses/databaseResponse";
 import { useNavigate } from "react-router";
+import AlertDialog from "../../../components/questionDialog/QuestionDialog";
 
 interface DatabaseListItemProps {
     database: DatabaseResponse;
@@ -34,7 +35,10 @@ export default function DatabaseListItem({
     onCreateCollection,
 }: DatabaseListItemProps) {
     const [open, setOpen] = useState(false);
+    const [openForm, setOpenForm] = useState(false);
     const [newCollectionName, setNewCollectionName] = useState("");
+    const [collectionToDrop, setCollectionToDrop] = useState("");
+    const [openDropDatabase, setOpenDropDatabase] = useState(false);
     const navigate = useNavigate();
 
     const handleNavigateToCollection = (collectionName: string) => {
@@ -45,6 +49,21 @@ export default function DatabaseListItem({
         onCreateCollection(database.databaseName, newCollectionName);
         setOpen(false);
         setNewCollectionName("");
+    };
+
+    const handleDropDatabase = () => {
+        onDropDatabase(database.databaseName);
+        setOpen(false);
+    };
+
+    const handleDrop = (collectionName: string) => {
+        onDropCollection(database.databaseName, collectionName);
+        setOpenForm(false);
+    };
+
+    const preDrop = (collectionName: string) => {
+        setCollectionToDrop(collectionName);
+        setOpenForm(true);
     };
 
     return (
@@ -69,7 +88,7 @@ export default function DatabaseListItem({
                             size="small"
                             startIcon={<DeleteIcon />}
                             sx={{ fontSize: "14px", color: colors.warning }}
-                            onClick={() => onDropDatabase(database.databaseName)}
+                            onClick={() => setOpenDropDatabase(true)}
                         >
                             Drop Database
                         </Button>
@@ -120,7 +139,7 @@ export default function DatabaseListItem({
                             </ListItemButton>
                             <ListItemButton
                                 sx={{ fontSize: "14px", color: colors.warning }}
-                                onClick={() => onDropCollection(database.databaseName, collection)}
+                                onClick={() => preDrop(collection)}
                             >
                                 <DeleteIcon />
                                 Drop Collection
@@ -128,6 +147,29 @@ export default function DatabaseListItem({
                         </ListItem>
                     ))}
                 </List>
+
+                <AlertDialog
+                    open={openForm}
+                    setOpen={setOpenForm}
+                    title="Drop Collection"
+                    description="Are you sure you want to drop this collection?"
+                    onConfirm={() => handleDrop(collectionToDrop)}
+                    onCancel={() => setOpenForm(false)}
+                    confirmText="Drop"
+                    cancelText="Cancel"
+                />
+
+                <AlertDialog
+                    open={openDropDatabase}
+                    setOpen={setOpenDropDatabase}
+                    title="Drop Database"
+                    description="Are you sure you want to drop this database?"
+                    onConfirm={() => handleDropDatabase()}
+                    onCancel={() => setOpenDropDatabase(false)}
+                    confirmText="Drop"
+                    cancelText="Cancel"
+                />
+
                 <FormDialog
                     open={open}
                     setOpen={setOpen}
