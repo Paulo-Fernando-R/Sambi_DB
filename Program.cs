@@ -68,7 +68,8 @@ app.MapFallbackToFile("index.html");
 app.MapControllers();
 
 //Standalone build = dotnet publish -c Release -r win-x64 --self-contained
-//dotnet publish -c Release -r win-x64 --self - contained true /p:PublishSingleFile = true
+//                   dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile = true
+//dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 
 string port = builder.Configuration.GetSection("Config").GetValue<string>("Port");
 app.Run($"http://localhost:{port}");
