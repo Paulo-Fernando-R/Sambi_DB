@@ -1,11 +1,10 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import CollectionController from "./collectionController";
 
 export function useCollection(databaseName: string, collectionName: string) {
     const PAGE_SIZE = 10;
     const controller = new CollectionController();
-    const queryClient = useQueryClient();
     const [message, setMessage] = useState("");
     const [page, setPage] = useState(1);
 

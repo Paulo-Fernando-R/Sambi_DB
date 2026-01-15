@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-//@ts-expect-error no types
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -38,10 +37,6 @@ export default function AddModal({ open, setOpen, saveRegister }: AddModalProps)
     const handleChange = useCallback((newEntity: object) => {
         setEntity(newEntity);
     }, []);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
 
     const handleClose = () => {
         setOpen(false);

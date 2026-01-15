@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-//@ts-expect-error no types
 import { InteractiveJsonEditor, jsonToEntity } from "interactive-json-editor";
 import { Box, Button, Paper, Skeleton, Typography } from "@mui/material";
 import listItemStyles from "./listItemStyles";

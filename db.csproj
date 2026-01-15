@@ -27,12 +27,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
-	<!-- <Target Name="BuildReactApp" BeforeTargets ="Build">
-		<Exec Command="npm install" WorkingDirectory="admin" />
-		<Exec Command="npm run build" WorkingDirectory="admin" />
-		<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;wwwroot\&quot; /E /H /Y"/>
-		<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;bin\Debug\net8.0\wwwroot\&quot; /E /H /Y"/>
-		<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;bin\Release\net8.0\wwwroot\&quot; /E /H /Y"/>
-	</Target> -->
+  <Target Name="BuildReactApp" BeforeTargets ="Build">
+	<Exec Command="npm install" WorkingDirectory="admin" />
+	<Exec Command="npm run build" WorkingDirectory="admin" />
+	<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;wwwroot\&quot; /E /H /Y"/>
+	<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;bin\Debug\net8.0\wwwroot\&quot; /E /H /Y"/>
+	<Exec Command="xcopy &quot;admin\dist\*.*&quot; &quot;bin\Release\net8.0\wwwroot\&quot; /E /H /Y"/>
+  </Target>
 
 </Project>
