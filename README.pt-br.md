@@ -4,7 +4,9 @@
 
 # Sambi_DB
 
-Sambi_DB é um mecanismo de banco de dados personalizado construído com .NET 8, apresentando um painel administrativo moderno desenvolvido em React. Ele fornece um backend robusto para gerenciar coleções e documentos, completo com uma interface de usuário limpa e interativa.
+**Sambi_DB** é um mecanismo de banco de dados leve, não relacional e orientado a documentos, construído do zero usando C# e .NET 8. Em vez de encapsular soluções existentes, ele implementa sua própria lógica central para leitura e escrita de dados, utilizando algoritmos baseados em árvore para lidar com operações de armazenamento e recuperação de forma eficiente.
+
+Ele foi projetado para ser um banco de dados direto e sem esquema (schema-less), que demonstra como esses mecanismos internos funcionam, acompanhado por um painel administrativo amigável em React para gerenciar suas coleções e documentos.
 
 ## 🚀 Funcionalidades
 

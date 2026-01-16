@@ -4,7 +4,9 @@
 
 # Sambi_DB
 
-Sambi_DB is a custom database engine built with .NET 8, featuring a modern admin dashboard developed in React. It provides a robust backend for managing collections and documents, complete with a clean and interactive user interface.
+**Sambi_DB** is a lightweight, non-relational, document-oriented database engine built from scratch using C# and .NET 8. Instead of wrapping existing solutions, it implements its own core logic for reading and writing data, utilizing tree-based algorithms to handle storage and retrieval operations efficiently.
+
+It is designed to be a straightforward, schema-less database that demonstrates how these internal mechanisms work, paired with a user-friendly React admin dashboard for managing your collections and documents.
 
 ## 🚀 Features
 
