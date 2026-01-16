@@ -6,44 +6,44 @@ Sambi_DB is a custom database engine built with .NET 8, featuring a modern admin
 
 ## 🚀 Features
 
--   **Custom Database Engine**: Built from the ground up using C# and .NET 8.
--   **Admin Dashboard**: A modern, responsive web interface for managing your database.
--   **Collection Management**: Create, view, and manage collections easily.
--   **Document Operations**: efficient storage and retrieval mechanisms.
--   **API Documentation**: Integrated Swagger UI for testing and exploring API endpoints.
--   **Windows Service Support**: Capable of running as a standalone Windows Service.
+- **Custom Database Engine**: Built from the ground up using C# and .NET 8.
+- **Admin Dashboard**: A modern, responsive web interface for managing your database.
+- **Collection Management**: Create, view, and manage collections easily.
+- **Document Operations**: efficient storage and retrieval mechanisms.
+- **API Documentation**: Integrated Swagger UI for testing and exploring API endpoints.
+- **Windows Service Support**: Capable of running as a standalone Windows Service.
 
 ## 🛠 Tech Stack
 
 ### Backend
 
--   **Framework**: .NET 8 (ASP.NET Core)
--   **Language**: C#
--   **Documentation**: Swagger / OpenAPI
--   **Containerization**: Docker support
+- **Framework**: .NET 8 (ASP.NET Core)
+- **Language**: C#
+- **Documentation**: Swagger / OpenAPI
+- **Containerization**: Docker support
 
 ### Frontend (Admin Panel)
 
--   **Framework**: React
--   **Build Tool**: Vite
--   **Language**: TypeScript
--   **UI Library**: Material UI (MUI)
--   **State Management**: React Query (@tanstack/react-query)
--   **Routing**: React Router
+- **Framework**: React
+- **Build Tool**: Vite
+- **Language**: TypeScript
+- **UI Library**: Material UI (MUI)
+- **State Management**: React Query (@tanstack/react-query)
+- **Routing**: React Router
 
 ## 📂 Project Structure
 
--   `Index/`: Core database logic, operations, and exception handling.
--   `Presenters/`: API Controllers handling HTTP requests.
--   `admin/`: Frontend source code (React application).
--   `db.csproj`: Project configuration and build targets.
+- `Index/`: Core database logic, operations, and exception handling.
+- `Presenters/`: API Controllers handling HTTP requests.
+- `admin/`: Frontend source code (React application).
+- `db.csproj`: Project configuration and build targets.
 
 ## 🏁 Getting Started
 
 ### Prerequisites
 
--   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
--   [Node.js](https://nodejs.org/) (for building the frontend)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js](https://nodejs.org/) (for building the frontend)
 
 ### Installation & Running
 
@@ -65,8 +65,8 @@ Sambi_DB is a custom database engine built with .NET 8, featuring a modern admin
     _This will install frontend dependencies, build the React app, copy the artifacts to `wwwroot`, and start the .NET server._
 
 3.  **Access the Application:**
-    -   **Admin Dashboard**: `http://localhost:<PORT>/` (usually configured in `appsettings.json` or `Program.cs` ) (default port: 5000)
-    -   **Swagger API**: `http://localhost:<PORT>/swagger`
+    - **Admin Dashboard**: `http://localhost:<PORT>/` (usually configured in `appsettings.json` or `Program.cs` ) (default port: 5000)
+    - **Swagger API**: `http://localhost:<PORT>/swagger`
 
 ### Development Mode
 
@@ -118,22 +118,65 @@ Sambi_DB exposes a REST API to manage databases, collections, and documents (reg
 
 ### 3. Register (Document) Operations
 
-| Method   | Endpoint                          | Description                      | Query/Body Parameters                                                                           |
-| :------- | :-------------------------------- | :------------------------------- | :---------------------------------------------------------------------------------------------- |
-| `POST`   | `/Register/Create/{DatabaseName}` | Adds a document to a collection. | **Body:** `{ "CollectionName": "string", "JsonContent": "string (JSON)" }`                      |
-| `PUT`    | `/Register/Update/{DatabaseName}` | Updates a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "int", "JsonContent": "string (JSON)" }` |
-| `DELETE` | `/Register/Delete/{DatabaseName}` | Deletes a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "int", "Confirm": true }`                |
+| Method   | Endpoint                          | Description                      | Query/Body Parameters                                                               |
+| :------- | :-------------------------------- | :------------------------------- | :---------------------------------------------------------------------------------- |
+| `POST`   | `/Register/Create/{DatabaseName}` | Adds a document to a collection. | **Body:** `{ "CollectionName": "string", "Data": { ... } }`                         |
+| `PUT`    | `/Register/Update/{DatabaseName}` | Updates a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "string", "Data": { ... } }` |
+| `DELETE` | `/Register/Delete/{DatabaseName}` | Deletes a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "string", "Confirm": true }` |
 
 #### Array Operations
 
 Manage arrays within documents (e.g., adding tags or items to a list inside a document).
 
--   **Add to Array**: `POST /Register/Add/Array/{DatabaseName}`
-    -   **Body**: `{ "CollectionName": "string", "RegisterId": "int", "ArrayName": "string", "JsonContent": "string" }`
--   **Update Array Item**: `PUT /Register/Update/Array/{DatabaseName}`
-    -   **Body**: `{ "CollectionName": "string", "RegisterId": "int", "ArrayName": "string", "JsonContent": "string", "Confirm": true }`
--   **Delete from Array**: `DELETE /Register/Delete/Array/{DatabaseName}`
-    -   **Body**: `{ "CollectionName": "string", "RegisterId": "int", "ArrayName": "string", "JsonContent": "string", "Confirm": true }`
+| Method   | Endpoint                                | Description                    | Query/Body Parameters                                                                                                                                                    |
+| :------- | :-------------------------------------- | :----------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST`   | `/Register/Add/Array/{DatabaseName}`    | Adds an item to an array.      | **Body:** `{ "RegisterId": "string", "CollectionName": "string", "ArrayName": "string", "Data": { ... } }`                                                               |
+| `PUT`    | `/Register/Update/Array/{DatabaseName}` | Updates an item in an array.   | **Body:** `{ "RegisterId": "string", "CollectionName": "string", "ArrayName": "string", "Property": "string", "Value": "string", "NewValue": { ... }, "Confirm": true }` |
+| `DELETE` | `/Register/Delete/Array/{DatabaseName}` | Deletes an item from an array. | **Body:** `{ "RegisterId": "string", "CollectionName": "string", "ArrayName": "string", "Property": "string", "Value": "string", "Confirm": true }`                      |
+
+**1. Add to Array**
+
+```json
+{
+  "RegisterId": "bbf2a446-bbe1-4c8d-b95a-2969923ea1ab",
+  "CollectionName": "Users",
+  "ArrayName": "Tags",
+  "Data": {
+    "id": "2",
+    "description": "developer"
+  }
+}
+```
+
+**2. Update Array Item**
+
+```json
+{
+  "RegisterId": "bbf2a446-bbe1-4c8d-b95a-2969923ea1ab",
+  "CollectionName": "Users",
+  "ArrayName": "Tags",
+  "Property": "id",
+  "Value": "2",
+  "NewValue": {
+    "id": "2",
+    "description": "lead-developer"
+  },
+  "Confirm": true
+}
+```
+
+**3. Delete from Array**
+
+```json
+{
+  "RegisterId": "bbf2a446-bbe1-4c8d-b95a-2969923ea1ab",
+  "CollectionName": "Users",
+  "ArrayName": "Tags",
+  "Property": "id",
+  "Value": "2",
+  "Confirm": true
+}
+```
 
 ### 4. Query Operations
 
@@ -141,12 +184,12 @@ Manage arrays within documents (e.g., adding tags or items to a list inside a do
 
 `POST /Query/ById/{DatabaseName}`
 
--   **Body**:
+- **Body**:
 
 ```json
 {
-    "CollectionName": "string",
-    "Id": "int"
+  "CollectionName": "string",
+  "Id": "string"
 }
 ```
 
@@ -159,18 +202,18 @@ Allows filtering documents based on specific conditions.
 
 ```json
 {
-    "CollectionName": "string",
-    "Limit": 20,
-    "Skip": 0,
-    "ConditionsBehavior": "&&", // "&&" (AND) or "||" (OR)
-    "QueryConditions": [
-        {
-            "Key": "propertyName",
-            "Value": "valueToSearch",
-            "Operation": "==",
-            "ArrayProperty": "" // Optional, for nested array properties
-        }
-    ]
+  "CollectionName": "string",
+  "Limit": 20,
+  "Skip": 0,
+  "ConditionsBehavior": "&&", // "&&" (AND) or "||" (OR)
+  "QueryConditions": [
+    {
+      "Key": "propertyName",
+      "Value": "valueToSearch",
+      "Operation": "==",
+      "ArrayProperty": "" // Optional, for nested array properties
+    }
+  ]
 }
 ```
 
@@ -194,11 +237,11 @@ To find users where `age >= 18` AND `status == "active"`:
 
 ```json
 {
-    "CollectionName": "Users",
-    "ConditionsBehavior": "&&",
-    "QueryConditions": [
-        { "Key": "age", "Value": "18", "Operation": ">=" },
-        { "Key": "status", "Value": "active", "Operation": "==" }
-    ]
+  "CollectionName": "Users",
+  "ConditionsBehavior": "&&",
+  "QueryConditions": [
+    { "Key": "age", "Value": "18", "Operation": ">=" },
+    { "Key": "status", "Value": "active", "Operation": "==" }
+  ]
 }
 ```

@@ -99,8 +99,13 @@ namespace db.Models
 
                 var item = new JObject(x.DynamicKeys());
                 bool res = DynamicOperatorMapper.ExecuteAllConditions(item, operatorType, conditions);
-      
-                bool skipRes = Skip(res, skip, skipCount);
+
+                if (!res)
+                {
+                    return res;
+                }
+
+                bool skipRes = Skip(skip, skipCount);
 
                 if (!skipRes)
                 {
@@ -108,7 +113,7 @@ namespace db.Models
                     return skipRes;
                 }
 
-                bool limitRes = Limit(res, limit, limitCount);
+                bool limitRes = Limit(limit, limitCount);
 
                 if (!limitRes)
                 {
@@ -125,12 +130,8 @@ namespace db.Models
         }
 
         //Return true if ended skip count
-        private bool Skip(bool response, int skip, int skipCount)
+        private bool Skip(int skip, int skipCount)
         {
-            if (!response)
-            {
-                return false;
-            }
 
             if (skipCount < skip)
             {
@@ -142,12 +143,8 @@ namespace db.Models
         }
 
         //Return true if not ended limit count
-        private bool Limit(bool response, int limit, int limitCount)
+        private bool Limit(int limit, int limitCount)
         {
-            if (!response)
-            {
-                return false;
-            }
 
             if (limit > limitCount)
             {
