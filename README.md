@@ -1,3 +1,5 @@
+> [Ler em Português](README.pt-br.md)
+
 ![Sambi_DB Logo](admin/public/Icon.png)
 
 # Sambi_DB
