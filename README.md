@@ -107,6 +107,20 @@ Sambi_DB exposes a REST API to manage databases, collections, and documents (reg
 | `DELETE` | `/Database/Delete/{DatabaseName}` | Deletes a database.           | **Body:** `{ "Confirm": true }`          |
 | `GET`    | `/Database/List`                  | Lists all existing databases. | -                                        |
 
+**Examples:**
+
+_Create Database_
+
+```json
+{ "DatabaseName": "MyDatabase" }
+```
+
+_Delete Database_
+
+```json
+{ "Confirm": true }
+```
+
 ### 2. Collection Operations
 
 | Method   | Endpoint                            | Description                       | Query/Body Parameters                                                                          |
@@ -116,6 +130,26 @@ Sambi_DB exposes a REST API to manage databases, collections, and documents (reg
 | `DELETE` | `/Collection/Delete/{DatabaseName}` | Deletes a collection.             | **Body:** `{ "CollectionName": "string", "Confirm": true }`                                    |
 | `GET`    | `/Collection/List/{DatabaseName}`   | Lists collections in a DB.        | -                                                                                              |
 
+**Examples:**
+
+_Create Collection_
+
+```json
+{ "CollectionName": "Users" }
+```
+
+_Rename Collection_
+
+```json
+{ "CollectionName": "Users", "NewCollectionName": "Customers", "Confirm": true }
+```
+
+_Delete Collection_
+
+```json
+{ "CollectionName": "Users", "Confirm": true }
+```
+
 ### 3. Register (Document) Operations
 
 | Method   | Endpoint                          | Description                      | Query/Body Parameters                                                               |
@@ -123,6 +157,43 @@ Sambi_DB exposes a REST API to manage databases, collections, and documents (reg
 | `POST`   | `/Register/Create/{DatabaseName}` | Adds a document to a collection. | **Body:** `{ "CollectionName": "string", "Data": { ... } }`                         |
 | `PUT`    | `/Register/Update/{DatabaseName}` | Updates a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "string", "Data": { ... } }` |
 | `DELETE` | `/Register/Delete/{DatabaseName}` | Deletes a document.              | **Body:** `{ "CollectionName": "string", "RegisterId": "string", "Confirm": true }` |
+
+**Examples:**
+
+_add Register (Document)_
+
+```json
+{
+  "CollectionName": "Users",
+  "Data": {
+    "name": "Jane Doe",
+    "email": "jane@example.com"
+  }
+}
+```
+
+_Update Register_
+
+```json
+{
+  "CollectionName": "Users",
+  "RegisterId": "bbf2a446-bbe1-4c8d-b95a-2969923ea1ab",
+  "Data": {
+    "name": "Jane Does",
+    "email": "jane.does@example.com"
+  }
+}
+```
+
+_Delete Register_
+
+```json
+{
+  "CollectionName": "Users",
+  "RegisterId": "bbf2a446-bbe1-4c8d-b95a-2969923ea1ab",
+  "Confirm": true
+}
+```
 
 #### Array Operations
 
@@ -242,6 +313,59 @@ To find users where `age >= 18` AND `status == "active"`:
   "QueryConditions": [
     { "Key": "age", "Value": "18", "Operation": ">=" },
     { "Key": "status", "Value": "active", "Operation": "==" }
+  ]
+}
+```
+
+### 6. Advanced Query Examples
+
+**1. Filter by Array Content & Property**
+Find registers where `roles` array contains an item with `id == 1` AND the register's `name` is `fer`.
+
+```json
+{
+  "CollectionName": "coll",
+  "ConditionsBehavior": "&&",
+  "QueryConditions": [
+    {
+      "Key": "id",
+      "Value": "1",
+      "Operation": "[==]",
+      "ArrayProperty": "roles"
+    },
+    {
+      "Key": "name",
+      "Value": "fer",
+      "Operation": "=="
+    }
+  ]
+}
+```
+
+**2. Range Query (Price Range)**
+Find products with price greater than 50 AND less than or equal to 200.
+
+```json
+{
+  "CollectionName": "Products",
+  "ConditionsBehavior": "&&",
+  "QueryConditions": [
+    { "Key": "price", "Value": "50", "Operation": ">" },
+    { "Key": "price", "Value": "200", "Operation": "<=" }
+  ]
+}
+```
+
+**3. Partial Text Search (OR condition)**
+Find users where name contains "John" OR email contains "gmail".
+
+```json
+{
+  "CollectionName": "Users",
+  "ConditionsBehavior": "||",
+  "QueryConditions": [
+    { "Key": "name", "Value": "John", "Operation": "%" },
+    { "Key": "email", "Value": "gmail", "Operation": "%" }
   ]
 }
 ```
